@@ -16,7 +16,6 @@ fn read_device_config(handle: tauri::AppHandle) -> String {
     let config_path = handle.path_resolver()
         .resolve_resource("sampleData/deviceConfig.json")
         .expect("failed to read JSON");
-    println!("{}", config_path.display());
     return std::fs::read_to_string(&config_path).expect("failed to read JSON");
 }
 

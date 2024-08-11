@@ -11,6 +11,27 @@
             {
               "action": "Press",
               "type": "Program Change" 
+            },
+            {
+              "action": "Press",
+              "type": "Some Other Change" 
+            }
+          ]
+        },
+        {
+          "name": "Preset 2",
+          "messages": [
+            {
+              "action": "Press",
+              "type": "Program Change" 
+            },
+            {
+              "action": "Press",
+              "type": "Some Other Change" 
+            },
+            {
+              "action": "Press",
+              "type": "Some New Change" 
             }
           ]
         }
