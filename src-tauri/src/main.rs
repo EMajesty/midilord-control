@@ -11,12 +11,19 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn read_device_config(handle: tauri::AppHandle) -> String {
+    let config_path = handle.path_resolver()
+        .resolve_resource("sampleData/deviceConfig.json")
+        .expect("failed to read JSON");
+    return std::fs::read_to_string(&config_path).expect("failed to read JSON");
+}
+
 fn main() {
     run().unwrap();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![
-                        greet
-        ])
+        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![read_device_config])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
