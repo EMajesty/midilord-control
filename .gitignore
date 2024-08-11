@@ -1,0 +1,8 @@
+node_modules
+.svelte-kit
+
+# Rust
+src-tauri/debug/
+src-tauri/target/
+**/*.rs.bk
+*.pdb
