@@ -1,0 +1,20 @@
+{
+  "active_bank": "Bank 1",
+  "banks": [
+    {
+      "name": "Bank 1",
+      "active_preset": "Preset 1",
+      "presets": [
+        {
+          "name": "Preset 1",
+          "messages": [
+            {
+              "action": "Press",
+              "type": "Program Change" 
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
