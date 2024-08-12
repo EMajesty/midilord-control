@@ -19,15 +19,6 @@ fn read_device_config(handle: tauri::AppHandle) -> String {
     return std::fs::read_to_string(&config_path).expect("failed to read JSON");
 }
 
-fn main() {
-    run().unwrap();
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![read_device_config])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
-
 fn run() -> Result<(), Box<dyn Error>> {
     let mut input = String::new();
 
@@ -82,4 +73,13 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     println!("Closing connection");
     Ok(())
+}
+
+fn main() {
+    run().unwrap();
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![read_device_config])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }
