@@ -1,20 +1,27 @@
 <script lang="ts">
-  import type { DeviceConfig } from "$lib/utils/types";
+  import type { Bank, DeviceConfig, Preset } from "$lib/utils/types";
+  import { beforeUpdate } from "svelte";
 
   export let deviceConfig: DeviceConfig;
   export let uploadConfig: (config: DeviceConfig) => void;
-  let activeBank =
-    deviceConfig.banks.find((bank) => bank.name === deviceConfig.active_bank) ??
-    deviceConfig.banks[0];
-
-  let activePreset =
-    activeBank.presets.find(
-      (preset) => preset.name === deviceConfig.active_preset
-    ) ?? activeBank.presets[0];
+  let activeBank: Bank;
+  let activePreset: Preset;
 
   function changePreset(presetName: string) {
     uploadConfig({ ...deviceConfig, active_preset: presetName });
   }
+
+  beforeUpdate(() => {
+    activeBank =
+      deviceConfig.banks.find(
+        (bank) => bank.name === deviceConfig.active_bank
+      ) ?? deviceConfig.banks[0];
+
+    activePreset =
+      activeBank.presets.find(
+        (preset) => preset.name === deviceConfig.active_preset
+      ) ?? activeBank.presets[0];
+  });
 </script>
 
 <div class="bank-display">
