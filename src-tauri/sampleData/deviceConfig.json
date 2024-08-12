@@ -1,9 +1,9 @@
 {
   "active_bank": "Bank 1",
+  "active_preset": "Preset 1",
   "banks": [
     {
       "name": "Bank 1",
-      "active_preset": "Preset 1",
       "presets": [
         {
           "name": "Preset 1",
@@ -32,6 +32,50 @@
             {
               "action": "Press",
               "type": "Some New Change" 
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bank 2",
+      "presets": [
+        {
+          "name": "Preset 1",
+          "messages": [
+            {
+              "action": "Press",
+              "type": "Program Change" 
+            },
+            {
+              "action": "Press",
+              "type": "Some Other Change" 
+            }
+          ]
+        },
+        {
+          "name": "Preset 2",
+          "messages": [
+            {
+              "action": "Press",
+              "type": "Program Change" 
+            },
+            {
+              "action": "Press",
+              "type": "Some Other Change" 
+            },
+            {
+              "action": "Press",
+              "type": "Some New Change" 
+            }
+          ]
+        },
+        {
+          "name": "Preset 3",
+          "messages": [
+            {
+              "action": "Press",
+              "type": "Program Change" 
             }
           ]
         }

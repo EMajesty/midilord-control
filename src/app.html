@@ -1,12 +1,46 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Midilord Control</title>
-    %sveltekit.head%
-  </head>
-  <body data-sveltekit-preload-data="hover">
-    <div style="display: contents">%sveltekit.body%</div>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Midilord Control</title>
+  %sveltekit.head%
+</head>
+<style>
+  body {
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  p,
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+  }
+  :root {
+    --whitespace-tiny: 1px;
+    --whitespace-small: 3px;
+    --whitespace-medium: 5px;
+    --whitespace-large: 8px;
+
+    --background-color-dark: #999;
+    --background-color-regular: #ccc;
+    --background-color-light: #eee;
+
+    --background-color-hover: #bbb;
+  }
+  button {
+    cursor: pointer;
+  }
+</style>
+
+<body data-sveltekit-preload-data="hover">
+  <div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>

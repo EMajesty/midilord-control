@@ -10,11 +10,11 @@ export interface Preset {
 
 export interface Bank {
   name: string;
-  active_preset: string;
   presets: Preset[];
 }
 
 export interface DeviceConfig {
   active_bank: string;
+  active_preset: string;
   banks: Bank[];
 }

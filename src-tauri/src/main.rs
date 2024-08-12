@@ -55,8 +55,7 @@ fn calculate_checksum(message: &[u8]) -> u8 {
 fn main() {
     run().unwrap();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![read_device_config])
+        .invoke_handler(tauri::generate_handler![greet, read_device_config])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
