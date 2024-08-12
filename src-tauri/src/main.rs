@@ -19,6 +19,39 @@ fn read_device_config(handle: tauri::AppHandle) -> String {
     return std::fs::read_to_string(&config_path).expect("failed to read JSON");
 }
 
+fn parse_sysex_message(message: &[u8]) -> String {
+    // We expect the message to be
+    // F0 7D 6D 64 6C ... cs F7
+    if message.len() > 0 
+        && message[0] == 0xF0 
+        && message[1] == 0x7D
+        && message[2] == 0x6D
+        && message[3] == 0x64
+        && message[4] == 0x6C {
+            let cs = calculate_checksum(message);
+            if cs == message[message.len() - 1] {
+                match message[5] {
+                    0x00 => String::from("hello"),
+                    0x01 => String::from("hello"),
+                    _ => String::from("hello")
+                }
+            } else {
+                String::from("hell")
+            }
+        } else {
+            String::from("hell")
+        }
+}
+
+fn calculate_checksum(message: &[u8]) -> u8 {
+    let mut checksum = message[0];
+    for i in 1..message.len()-2 {
+        checksum ^= message[i]
+    }
+    checksum &= 0x7F;
+    checksum
+}
+
 fn main() {
     run().unwrap();
     tauri::Builder::default()
