@@ -66,7 +66,7 @@
   li button {
     font-weight: bold;
     border: none;
-    background-color: var(--background-color-regular);
+    background-color: var(--background-color-dark);
     flex: 1;
     padding: 5px 8px;
     cursor: pointer;
@@ -75,9 +75,6 @@
     background-color: var(--background-color-hover);
   }
   li.active button {
-    background-color: var(--background-color-dark);
-    border-width: 2px 2px 0 2px;
-    border-style: solid;
-    border-color: var(--background-color-regular);
+    background-color: var(--background-color-regular);
   }
 </style>
