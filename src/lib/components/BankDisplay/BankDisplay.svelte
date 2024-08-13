@@ -1,61 +1,49 @@
 <script lang="ts">
-  import type { Bank, DeviceConfig, Preset } from "$lib/utils/types";
-  import { beforeUpdate } from "svelte";
+  import { updateConfig } from "$lib/utils/utils";
+  import { onDestroy } from "svelte";
+  import MessageList from "./MessageList.svelte";
+  import { store } from "../../../store";
+  import { get } from "svelte/store";
 
-  export let deviceConfig: DeviceConfig;
-  export let uploadConfig: (config: DeviceConfig) => void;
-  let activeBank: Bank;
-  let activePreset: Preset;
+  let deviceConfig = get(store).deviceConfig;
+  let activeBank = deviceConfig?.banks.find(
+    (bank) => bank.name === deviceConfig?.active_bank
+  );
+  const unsubscribe = store.subscribe((value) => {
+    deviceConfig = value.deviceConfig;
+    activeBank = deviceConfig?.banks.find(
+      (bank) => bank.name === deviceConfig?.active_bank
+    );
+  });
 
   function changePreset(presetName: string) {
-    uploadConfig({ ...deviceConfig, active_preset: presetName });
+    if (!deviceConfig) return;
+    updateConfig({ ...deviceConfig, active_preset: presetName });
   }
 
-  beforeUpdate(() => {
-    activeBank =
-      deviceConfig.banks.find(
-        (bank) => bank.name === deviceConfig.active_bank
-      ) ?? deviceConfig.banks[0];
-
-    activePreset =
-      activeBank.presets.find(
-        (preset) => preset.name === deviceConfig.active_preset
-      ) ?? activeBank.presets[0];
-  });
+  onDestroy(unsubscribe);
 </script>
 
 <div class="bank-display">
-  <h1>{activeBank.name}</h1>
-  <nav>
-    <ul>
-      {#each activeBank.presets as preset}
-        <li
-          class={preset.name === deviceConfig.active_preset
-            ? "active"
-            : undefined}
-        >
-          <button on:click={() => changePreset(preset.name)}
-            >{preset.name}</button
+  {#if activeBank && deviceConfig}
+    <h1>{activeBank.name}</h1>
+    <nav>
+      <ul>
+        {#each activeBank.presets as preset}
+          <li
+            class={preset.name === deviceConfig.active_preset
+              ? "active"
+              : undefined}
           >
-        </li>
-      {/each}
-    </ul>
-  </nav>
-  <div class="message-container">
-    {#each activePreset.messages as message, i}
-      <div class="message-row">
-        <h3>Msg {i + 1}</h3>
-        <div class="message-column">
-          <b>Action</b>
-          <p>{message.action}</p>
-        </div>
-        <div class="message-column">
-          <b>Type</b>
-          <p>{message.type}</p>
-        </div>
-      </div>
-    {/each}
-  </div>
+            <button on:click={() => changePreset(preset.name)}
+              >{preset.name}</button
+            >
+          </li>
+        {/each}
+      </ul>
+    </nav>
+    <MessageList />
+  {/if}
 </div>
 
 <style>
@@ -91,26 +79,5 @@
     border-width: 2px 2px 0 2px;
     border-style: solid;
     border-color: var(--background-color-regular);
-  }
-  .message-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    background-color: var(--background-color-regular);
-    border: 2px solid var(--background-color-regular);
-  }
-  .message-row {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    background-color: var(--background-color-light);
-    padding: 3px 5px;
-  }
-  .message-row h3 {
-    margin-block: auto;
-  }
-  .message-column {
-    padding: 3px 5px;
-    background-color: var(--background-color-regular);
   }
 </style>

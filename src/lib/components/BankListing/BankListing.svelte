@@ -1,41 +1,51 @@
 <script lang="ts">
-  import type { DeviceConfig } from "$lib/utils/types";
-
-  export let deviceConfig: DeviceConfig;
-  export let uploadConfig: (config: DeviceConfig) => void;
+  import { updateConfig } from "$lib/utils/utils";
+  import { get } from "svelte/store";
+  import { store } from "../../../store";
+  import { onDestroy } from "svelte";
 
   let collapsed = false;
+  let deviceConfig = get(store).deviceConfig;
+  const unsubscribe = store.subscribe((value) => {
+    deviceConfig = value.deviceConfig;
+  });
 
   function collapse() {
     collapsed = !collapsed;
   }
 
   function changeBank(bankName: string) {
-    const newBank = deviceConfig.banks.find((bank) => bank.name === bankName);
-    if (!newBank) throw new Error("What u tryin boe");
+    const newBank = deviceConfig?.banks.find((bank) => bank.name === bankName);
+    if (!deviceConfig || !newBank) return;
     const newPreset = newBank.presets[0];
-    uploadConfig({
+    updateConfig({
       ...deviceConfig,
       active_bank: bankName,
       active_preset: newPreset.name,
     });
   }
+
+  onDestroy(unsubscribe);
 </script>
 
 <div class={collapsed ? "bank-listing collapsed" : "bank-listing"}>
-  <button class="collapse-button" on:click={collapse}
-    >{collapsed ? ">" : "<"}</button
-  >
-  <ul>
-    {#each deviceConfig.banks as bank}
-      <li>
-        <button
-          class={deviceConfig.active_bank === bank.name ? "active" : undefined}
-          on:click={() => changeBank(bank.name)}>{bank.name}</button
-        >
-      </li>
-    {/each}
-  </ul>
+  {#if deviceConfig}
+    <button class="collapse-button" on:click={collapse}
+      >{collapsed ? ">" : "<"}</button
+    >
+    <ul>
+      {#each deviceConfig.banks as bank}
+        <li>
+          <button
+            class={deviceConfig.active_bank === bank.name
+              ? "active"
+              : undefined}
+            on:click={() => changeBank(bank.name)}>{bank.name}</button
+          >
+        </li>
+      {/each}
+    </ul>
+  {/if}
 </div>
 
 <style>
@@ -65,7 +75,8 @@
     font-size: 15px;
     font-weight: bold;
   }
-  .bank-listing button:hover, .bank-listing button.active:hover {
+  .bank-listing button:hover,
+  .bank-listing button.active:hover {
     color: #ccc;
   }
   .bank-listing button.active {

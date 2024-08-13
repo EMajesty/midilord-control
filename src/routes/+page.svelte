@@ -4,27 +4,46 @@
   import type { DeviceConfig } from "$lib/utils/types";
   import BankDisplay from "$lib/components/BankDisplay/BankDisplay.svelte";
   import BankListing from "$lib/components/BankListing/BankListing.svelte";
-  import {  onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
+  import { store } from "../store";
 
+  let deviceConfig: DeviceConfig | undefined;
+  let connected: boolean;
+  const unsubscribe = store.subscribe((value) => {
+    deviceConfig = value.deviceConfig;
+    connected = value.connected;
+  });
   let configLoading = false;
-  let deviceConfig: DeviceConfig | undefined = undefined;
+
   const connect = () => {
     configLoading = true;
     invoke("connect_device");
+  };
+
+  // For testing purposes, remove when done testing
+  const disconnect = () => {
+    store.update((value) => ({ ...value, connected: false }));
   };
 
   onMount(() => {
     const connectionListener = listen<{ config: string }>(
       "device_connected",
       (event) => {
-        deviceConfig = JSON.parse(event.payload.config);
+        store.update((value) => ({
+          ...value,
+          connected: true,
+          deviceConfig: JSON.parse(event.payload.config),
+        }));
         configLoading = false;
       }
     );
     const updateListener = listen<{ config: string }>(
       "config_updated",
       (event) => {
-        deviceConfig = JSON.parse(event.payload.config);
+        store.update((value) => ({
+          ...value,
+          deviceConfig: JSON.parse(event.payload.config),
+        }));
         configLoading = false;
       }
     );
@@ -34,32 +53,23 @@
     };
   });
 
-  // For testing purposes, remove when done testing
-  const disconnect = () => {
-    deviceConfig = undefined;
-  };
-
-  const uploadConfig = (deviceConfig: DeviceConfig) => {
-    invoke("update_device_config", {
-      config: JSON.stringify(deviceConfig),
-    });
-  };
+  onDestroy(unsubscribe);
 </script>
 
 <div class="app">
-  {#if !configLoading && !deviceConfig}
+  {#if !connected || !deviceConfig}
     <div class="message-container">
       <h3>Controller not connected</h3>
       <button on:click={connect}>Connect</button>
     </div>
-  {:else if !deviceConfig}
+  {:else if configLoading}
     <div class="message-container">
       <p>Loading configurations from controller</p>
     </div>
-  {:else}
+  {:else if deviceConfig}
     <div class="content">
-      <BankListing {deviceConfig} {uploadConfig} />
-      <BankDisplay {deviceConfig} {uploadConfig} />
+      <BankListing />
+      <BankDisplay />
     </div>
     <button on:click={disconnect}>Disconnect</button>
   {/if}
