@@ -1,10 +1,12 @@
 <script lang="ts">
   import { get } from "svelte/store";
-  import { flip } from "svelte/animate";
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
   import { updateConfig } from "$lib/utils/utils";
-  import type { Message } from "$lib/utils/types";
+
+  type DndDragEvent = DragEvent & {
+    currentTarget: EventTarget & HTMLDivElement;
+  };
 
   let deviceConfig = get(store).deviceConfig;
   let activeBank = deviceConfig?.banks.find(
@@ -28,31 +30,46 @@
     messages = activePreset?.messages;
   });
 
-  function dragStart(event: any, messageIndex: number) {
+  function dragStart(event: DndDragEvent, messageIndex: number) {
     const data = { messageIndex };
-    event.dataTransfer.setData("text/plain", JSON.stringify(data));
+    event.dataTransfer?.setData("text/plain", JSON.stringify(data));
   }
 
-  function drop(event: any, targetIndex: number) {
-    console.log(event, targetIndex);
-    if (!deviceConfig || !messages) return;
+  function dragOver(event: DndDragEvent) {
     event.preventDefault();
-    const json = event.dataTransfer.getData("text/plain");
+  }
+
+  function drop(event: DndDragEvent, targetIndex: number) {
+    event.preventDefault();
+    const json = event.dataTransfer?.getData("text/plain");
+    if (!json || !deviceConfig || !messages) return;
     const data = JSON.parse(json);
     const messageIndex = data.messageIndex;
-    const movedMessage = messages[messageIndex];
-    const newMessages: Message[] = [];
-    for (let i = 0; i < targetIndex; i++) {
-      newMessages.push(messages[i]);
-    }
-    newMessages.push(movedMessage);
-    for (let i = targetIndex; i < messageIndex; i++) {
-      newMessages.push(messages[i]);
-    }
-    for (let i = messageIndex + 1; i < messages.length - 1; i++) {
-      newMessages.push(messages[i]);
-    }
-    messages = newMessages;
+    if (messageIndex === targetIndex) return;
+    const newMessages = [...messages];
+    const [movedMessage] = newMessages.splice(messageIndex, 1);
+    const insertToIndex =
+      messageIndex < targetIndex ? targetIndex - 1 : targetIndex;
+    updateConfig({
+      ...deviceConfig,
+      banks: deviceConfig.banks.map((bank) => {
+        if (bank.name !== deviceConfig?.active_bank) return bank;
+        return {
+          ...bank,
+          presets: bank.presets.map((preset) => {
+            if (preset.name !== deviceConfig?.active_preset) return preset;
+            return {
+              ...preset,
+              messages: [
+                ...newMessages.slice(0, insertToIndex),
+                movedMessage,
+                ...newMessages.slice(insertToIndex, newMessages.length),
+              ],
+            };
+          }),
+        };
+      }),
+    });
   }
 
   onDestroy(unsubscribe);
@@ -63,11 +80,10 @@
     {#each messages as message, i (message)}
       <div
         class="message-row"
-        animate:flip
         on:dragstart={(event) => dragStart(event, i)}
         on:drop={(e) => drop(e, i)}
         draggable={true}
-        on:dragover={() => false}
+        on:dragover={dragOver}
       >
         <h3>Msg {i + 1}</h3>
         <div class="message-column">
