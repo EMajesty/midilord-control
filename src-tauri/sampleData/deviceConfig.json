@@ -76,6 +76,26 @@
             {
               "action": "Press",
               "type": "Program Change" 
+            },
+            {
+              "action": "Press",
+              "type": "2 Change" 
+            },
+            {
+              "action": "Press",
+              "type": "3 Change" 
+            },
+            {
+              "action": "Press",
+              "type": "4 Change" 
+            },
+            {
+              "action": "Press",
+              "type": "5 Change" 
+            },
+            {
+              "action": "Press",
+              "type": "6 Change" 
             }
           ]
         }
