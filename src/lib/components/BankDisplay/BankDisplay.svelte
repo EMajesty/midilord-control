@@ -26,22 +26,26 @@
 
 <div class="bank-display">
   {#if activeBank && deviceConfig}
-    <h1>{activeBank.name}</h1>
-    <nav>
-      <ul>
-        {#each activeBank.presets as preset}
-          <li
-            class={preset.name === deviceConfig.active_preset
-              ? "active"
-              : undefined}
-          >
-            <button on:click={() => changePreset(preset.name)}
-              >{preset.name}</button
+    <div class="bank-header">
+      <div class="bank-details">
+        <h1>{activeBank.name}</h1>
+      </div>
+      <nav>
+        <ul>
+          {#each activeBank.presets as preset}
+            <li
+              class={preset.name === deviceConfig.active_preset
+                ? "active"
+                : undefined}
             >
-          </li>
-        {/each}
-      </ul>
-    </nav>
+              <button on:click={() => changePreset(preset.name)}
+                >{preset.name}</button
+              >
+            </li>
+          {/each}
+        </ul>
+      </nav>
+    </div>
     <MessageList />
   {/if}
 </div>
@@ -50,6 +54,55 @@
   .bank-display {
     flex: 1;
     padding: var(--whitespace-large);
+    gap: var(--whitespace-large);
+    display: flex;
+    flex-direction: column;
+  }
+  .bank-header {
+    display: flex;
+    flex-direction: row;
+    gap: var(--whitespace-large);
+  }
+  .bank-details {
+    padding: 10px;
+    font-size: 14px;
+    height: 100px;
+    width: 496px;
+    color: var(--white-blue);
+    letter-spacing: 3px;
+    border: 5px var(--blue-5) outset;
+    background: linear-gradient(-115deg, #13048548, #0729ec49, #0729ec70),
+      repeating-linear-gradient(
+        var(--blue-1) 0px,
+        var(--blue-1) 6px,
+        transparent 6px,
+        transparent 42px,
+        var(--blue-1) 42px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        var(--blue-1) 0px,
+        var(--blue-1) 6px,
+        transparent 6px,
+        transparent 30px,
+        var(--blue-1) 30px
+      ),
+      repeating-linear-gradient(
+        var(--blue-3) 0px,
+        var(--blue-3) 1px,
+        transparent 1px,
+        transparent 6px,
+        var(--blue-3) 6px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        var(--blue-3) 0px,
+        var(--blue-3) 1px,
+        transparent 1px,
+        transparent 6px,
+        var(--blue-3) 6px
+      ),
+      linear-gradient(45deg, var(--blue-1), var(--blue-2));
   }
   ul {
     margin: 0;

@@ -50,11 +50,17 @@
 
 <style>
   .bank-listing {
-    background-color: var(--background-color-dark);
+    background: linear-gradient(
+      -215deg,
+      var(--gray-1),
+      var(--gray-2),
+      var(--gray-2)
+    );
     width: max(100px, 20%);
     padding: var(--whitespace-large);
     display: flex;
     flex-direction: column;
+    border-right: 5px var(--gray-3) solid;
   }
   .bank-listing.collapsed {
     width: initial;
@@ -65,6 +71,9 @@
   .bank-listing ul {
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--whitespace-large);
   }
   .bank-listing li {
     list-style: none;
@@ -74,13 +83,14 @@
     border: 0;
     font-size: 15px;
     font-weight: bold;
+    color: #FFF;
   }
   .bank-listing button:hover,
   .bank-listing button.active:hover {
-    color: #ccc;
+    color: var(--white-blue);
   }
   .bank-listing button.active {
-    color: green;
+    color: var(--blue-5);
   }
   .bank-listing li button:hover::before {
     content: "> ";
