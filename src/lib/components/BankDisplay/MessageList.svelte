@@ -35,12 +35,41 @@
     event.dataTransfer?.setData("text/plain", JSON.stringify(data));
   }
 
-  function dragOver(event: DndDragEvent) {
-    event.preventDefault();
+  function dragOverMiddlePoint(event: DndDragEvent) {
+    const { pageY, currentTarget } = event;
+    const { y, height } = currentTarget.getBoundingClientRect();
+    const middlePoint = y + height / 2;
+    return middlePoint > pageY;
   }
 
+  function dragOver(event: DndDragEvent) {
+    event.preventDefault();
+    const { currentTarget } = event;
+    currentTarget.classList.add("targeted");
+    if (dragOverMiddlePoint(event)) {
+      currentTarget.classList.remove("targeted-above");
+      currentTarget.classList.add("targeted-below");
+    } else {
+      currentTarget.classList.remove("targeted-below");
+      currentTarget.classList.add("targeted-above");
+    }
+  }
+
+  function clearDragClasses(currentTarget: EventTarget & HTMLDivElement) {
+    currentTarget.classList.remove("targeted");
+    currentTarget.classList.remove("targeted-above");
+    currentTarget.classList.remove("targeted-below");
+  }
+
+  function dragLeave(event: DndDragEvent) {
+    event.preventDefault();
+    clearDragClasses(event.currentTarget);
+  }
+
+  // TODO cleanup and test this more
   function drop(event: DndDragEvent, targetIndex: number) {
     event.preventDefault();
+    clearDragClasses(event.currentTarget);
     const json = event.dataTransfer?.getData("text/plain");
     if (!json || !deviceConfig || !messages) return;
     const data = JSON.parse(json);
@@ -48,8 +77,23 @@
     if (messageIndex === targetIndex) return;
     const newMessages = [...messages];
     const [movedMessage] = newMessages.splice(messageIndex, 1);
-    const insertToIndex =
-      messageIndex < targetIndex ? targetIndex - 1 : targetIndex;
+    let insertToIndex = 0;
+    const insertToBefore = dragOverMiddlePoint(event);
+    if (insertToBefore) {
+      insertToIndex =
+        targetIndex === 0
+          ? 0
+          : messageIndex < targetIndex
+            ? targetIndex - 1
+            : targetIndex;
+    } else {
+      insertToIndex =
+        targetIndex === newMessages.length
+          ? newMessages.length + 1
+          : messageIndex < targetIndex
+            ? targetIndex
+            : targetIndex + 1;
+    }
     updateConfig({
       ...deviceConfig,
       banks: deviceConfig.banks.map((bank) => {
@@ -79,13 +123,16 @@
   {#if messages}
     {#each messages as message, i (message)}
       <div
-        class="message-row"
+        class={"message-row"}
         on:dragstart={(event) => dragStart(event, i)}
         on:drop={(e) => drop(e, i)}
         draggable={true}
         on:dragover={dragOver}
+        on:dragleave={dragLeave}
       >
-        <h3>Msg {i + 1}</h3>
+        <div class="message-header">
+          <h3>Msg {i + 1}</h3>
+        </div>
         <div class="message-column">
           <b>Action</b>
           <p>{message.action}</p>
@@ -103,30 +150,57 @@
   .message-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
     background-color: var(--background-color-regular);
-    border: 2px solid var(--background-color-regular);
+    padding: var(--whitespace-large);
+    gap: 9px;
   }
   .message-row {
     display: flex;
     flex-direction: row;
-    gap: 5px;
-    background-color: var(--background-color-light);
-    padding: 3px 5px;
+    gap: var(--whitespace-large);
+    background-color: var(--blue-4);
     cursor: grab;
     z-index: 0;
     position: relative;
+    border: 5px outset var(--blue-4);
+    position: relative;
   }
-  .drag-container:global(.dragging) {
-    cursor: grabbing;
+  .message-row:global(.targeted) {
+    border-style: inset;
+  }
+  .message-row:global(.targeted)::before {
+    content: "";
+    width: calc(100% + 10px);
+    height: 5px;
+    background: linear-gradient(90deg, var(--white-blue), var(--blue-5));
     position: absolute;
-    z-index: 1;
+    left: -5px;
   }
-  .message-row h3 {
+  .message-row:global(.targeted-below)::before {
+    top: -12px;
+  }
+  .message-row:global(.targeted-above)::before {
+    bottom: -12px;
+  }
+  .message-header {
+    display: flex;
+    background: linear-gradient(90deg, var(--blue-5), var(--blue-4));
+    color: var(--white-blue);
+  }
+  .message-header h3 {
     margin-block: auto;
   }
+  .message-header,
   .message-column {
-    padding: 3px 5px;
+    padding: var(--whitespace-large);
+    color: #fff;
+    pointer-events: none;
+  }
+  .message-column {
     background-color: var(--background-color-regular);
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--whitespace-medium);
   }
 </style>
