@@ -29,22 +29,21 @@
     <div class="bank-header">
       <div class="bank-details">
         <h1>{activeBank.name}</h1>
+        <h3>{deviceConfig.active_preset}</h3>
       </div>
-      <nav>
-        <ul>
-          {#each activeBank.presets as preset}
-            <li
+      <div class="preset-container">
+        <p>Preset</p>
+        <div class="preset-buttons">
+          {#each activeBank.presets as preset, i}
+            <button
               class={preset.name === deviceConfig.active_preset
-                ? "active"
+                ? "selected"
                 : undefined}
+              on:click={() => changePreset(preset.name)}>{i + 1}</button
             >
-              <button on:click={() => changePreset(preset.name)}
-                >{preset.name}</button
-              >
-            </li>
           {/each}
-        </ul>
-      </nav>
+        </div>
+      </div>
     </div>
     <MessageList />
   {/if}
@@ -53,8 +52,6 @@
 <style>
   .bank-display {
     flex: 1;
-    padding: var(--whitespace-large);
-    gap: var(--whitespace-large);
     display: flex;
     flex-direction: column;
   }
@@ -62,15 +59,21 @@
     display: flex;
     flex-direction: row;
     gap: var(--whitespace-large);
+    background: linear-gradient(90deg, var(--gray-2), var(--gray-3));
+    padding: var(--whitespace-large);
+    border-bottom: 5px solid var(--gray-3);
   }
   .bank-details {
-    padding: 10px;
+    padding: 10px 10px 16px 10px;
     font-size: 14px;
     height: 100px;
     width: 496px;
     color: var(--white-blue);
     letter-spacing: 3px;
     border: 5px var(--blue-5) outset;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     background: linear-gradient(-115deg, #13048548, #0729ec49, #0729ec70),
       repeating-linear-gradient(
         var(--blue-1) 0px,
@@ -104,30 +107,28 @@
       ),
       linear-gradient(45deg, var(--blue-1), var(--blue-2));
   }
-  ul {
-    margin: 0;
-    padding: 0;
+  .preset-container {
+    margin-top: auto;
     display: flex;
-    flex-direction: row;
-    gap: 2px;
+    flex-direction: column;
+    gap: 5px;
+    color: #fff;
   }
-  li {
-    list-style: none;
-    background-color: var(--background-color-regular);
-    display: flex;
+  .preset-buttons {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
   }
-  li button {
-    font-weight: bold;
-    border: none;
-    background-color: var(--background-color-dark);
-    flex: 1;
-    padding: 5px 8px;
-    cursor: pointer;
+  .preset-container button {
+    padding: 5px;
+    font-size: 16px;
+    background: linear-gradient(var(--gray-2), var(--gray-3));
+    color: #fff;
   }
-  li button:hover {
-    background-color: var(--background-color-hover);
+  .preset-container button:hover {
+    background: linear-gradient(var(--gray-1), var(--gray-2));
   }
-  li.active button {
-    background-color: var(--background-color-regular);
+  .preset-container button.selected {
+    background: linear-gradient(var(--gray-1), var(--gray-2));
+    color: var(--blue-5);
   }
 </style>

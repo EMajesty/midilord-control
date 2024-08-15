@@ -83,14 +83,14 @@
     border: 0;
     font-size: 15px;
     font-weight: bold;
-    color: #FFF;
+    color: var(--blue-4);
   }
   .bank-listing button:hover,
   .bank-listing button.active:hover {
     color: var(--white-blue);
   }
   .bank-listing button.active {
-    color: var(--blue-5);
+    color: var(--white-blue);
   }
   .bank-listing li button:hover::before {
     content: "> ";
