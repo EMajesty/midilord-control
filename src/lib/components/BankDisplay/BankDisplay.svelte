@@ -22,14 +22,33 @@
   }
 
   onDestroy(unsubscribe);
+
+  const mapRow = (text: string) => {
+    const chars = text.split("").slice(0, 16);
+    for (let i = chars.length; i < 16; i++) {
+      chars.push("");
+    }
+    return chars;
+  };
+
+  $: bankNameChars = mapRow(activeBank?.name ?? "");
+  $: presetNameChars = mapRow(deviceConfig?.active_preset ?? "");
 </script>
 
 <div class="bank-display">
   {#if activeBank && deviceConfig}
     <div class="bank-header">
       <div class="bank-details">
-        <h1>{activeBank.name}</h1>
-        <h3>{deviceConfig.active_preset}</h3>
+        <div class="title-row">
+          {#each bankNameChars as char}
+            <span class="char-wrapper"><span>{char}</span></span>
+          {/each}
+        </div>
+        <div class="title-row">
+          {#each presetNameChars as char}
+            <span class="char-wrapper"><span>{char}</span></span>
+          {/each}
+        </div>
       </div>
       <div class="preset-container">
         <p>Preset</p>
@@ -59,12 +78,22 @@
     display: flex;
     flex-direction: row;
     gap: var(--whitespace-large);
-    background: linear-gradient(90deg, var(--gray-2), var(--gray-3));
+    background: linear-gradient(-45deg, #121311f1, rgba(39, 42, 35, 0.849)),
+      repeating-linear-gradient(
+        -35deg,
+        var(--gray-1) 0px,
+        var(--gray-2) 3px,
+        var(--gray-3) 6px
+      );
     padding: var(--whitespace-large);
-    border-bottom: 5px solid var(--gray-3);
+    border-top: 5px solid var(--gray-3);
+    border-left: 5px solid var(--gray-3);
+    border-right: 5px solid var(--gray-2);
+    border-bottom: 5px solid var(--gray-2);
+    box-shadow: 0 0 20px rgba(0,0,0, 0.5);
   }
   .bank-details {
-    padding: 10px 10px 16px 10px;
+    padding: 5px;
     font-size: 14px;
     height: 100px;
     width: 496px;
@@ -72,25 +101,27 @@
     letter-spacing: 3px;
     border: 5px var(--blue-5) outset;
     display: flex;
+    gap: 6px;
     flex-direction: column;
     justify-content: space-between;
-    background: linear-gradient(-115deg, #13048548, #0729ec49, #0729ec70),
-      repeating-linear-gradient(
-        var(--blue-1) 0px,
-        var(--blue-1) 6px,
-        transparent 6px,
-        transparent 42px,
-        var(--blue-1) 42px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        var(--blue-1) 0px,
-        var(--blue-1) 6px,
-        transparent 6px,
-        transparent 30px,
-        var(--blue-1) 30px
-      ),
-      repeating-linear-gradient(
+    background: linear-gradient(45deg, var(--blue-1), var(--blue-2));
+  }
+  .title-row{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+  }
+  .title-row:first-child .char-wrapper{
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .char-wrapper{
+    flex: 1;
+    font-size: 18px;
+    display: flex;
+    padding: 2px;
+    background: repeating-linear-gradient(
         var(--blue-3) 0px,
         var(--blue-3) 1px,
         transparent 1px,
@@ -104,8 +135,12 @@
         transparent 1px,
         transparent 6px,
         var(--blue-3) 6px
-      ),
-      linear-gradient(45deg, var(--blue-1), var(--blue-2));
+      );
+  }
+  .char-wrapper span {
+    margin: auto;
+    letter-spacing: 0;
+    line-height: 0;
   }
   .preset-container {
     margin-top: auto;
