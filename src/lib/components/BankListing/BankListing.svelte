@@ -29,6 +29,7 @@
 </script>
 
 <div class={collapsed ? "bank-listing collapsed" : "bank-listing"}>
+  <div class="list-wrapper">
   {#if deviceConfig}
     <button class="collapse-button" on:click={collapse}
       >{collapsed ? ">" : "<"}</button
@@ -47,20 +48,28 @@
     </ul>
   {/if}
 </div>
+</div>
 
 <style>
   .bank-listing {
-    background: linear-gradient(
-      -215deg,
-      var(--gray-1),
-      var(--gray-2),
-      var(--gray-2)
-    );
+    z-index: 1;
+    border-radius: 0 0 16px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.26);
+    border-right: 1px solid rgba(18, 19, 17, 0.26);
     width: max(100px, 20%);
+    display: flex;
+    background: linear-gradient(-45deg, #121311f1, rgba(39, 42, 35, 0.849));
+  }
+  .list-wrapper {
+    background: rgba(45, 48, 43, 0.431);
+    border-radius: 0 0 16px 0;
+    backdrop-filter: blur(7.5px);
+    -webkit-backdrop-filter: blur(7.5px);
     padding: var(--whitespace-large);
+    flex: 1;
     display: flex;
     flex-direction: column;
-    border-right: 5px var(--gray-3) solid;
+
   }
   .bank-listing.collapsed {
     width: initial;

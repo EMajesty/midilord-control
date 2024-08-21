@@ -81,13 +81,7 @@
     flex-direction: column;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(-45deg, #121311f1, rgba(39, 42, 35, 0.849)),
-      repeating-linear-gradient(
-        -35deg,
-        var(--gray-1) 0px,
-        var(--gray-2) 3px,
-        var(--gray-3) 6px
-      );
+    background-color: var(--gray-2);
   }
   .message-container {
     margin: auto;
