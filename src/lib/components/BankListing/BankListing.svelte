@@ -4,11 +4,15 @@
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
 
+  let searchText = "";
   let collapsed = false;
   let deviceConfig = get(store).deviceConfig;
   const unsubscribe = store.subscribe((value) => {
     deviceConfig = value.deviceConfig;
   });
+  $: banks = searchText
+    ? deviceConfig.banks.filter((bank) => bank.name.includes(searchText))
+    : deviceConfig.banks;
 
   function collapse() {
     collapsed = !collapsed;
@@ -25,29 +29,41 @@
     });
   }
 
+  function onSearch(
+    e: Event & {
+      currentTarget: EventTarget & HTMLInputElement;
+    }
+  ) {
+    searchText = e.currentTarget.value;
+  }
+
   onDestroy(unsubscribe);
 </script>
 
 <div class={collapsed ? "bank-listing collapsed" : "bank-listing"}>
   <div class="list-functions">
-    <input class="search-input" />
+    <input class="search-input" placeholder="Search..." on:input={onSearch} />
     <button class="collapse-button" on:click={collapse}
       >{collapsed ? ">" : "<"}</button
     >
   </div>
   <div class="list-wrapper">
-    <ul>
-      {#each deviceConfig.banks as bank}
-        <li>
-          <button
-            class={deviceConfig.active_bank === bank.name
-              ? "active"
-              : undefined}
-            on:click={() => changeBank(bank.name)}>{bank.name}</button
-          >
-        </li>
-      {/each}
-    </ul>
+    {#if banks.length}
+      <ul>
+        {#each banks as bank}
+          <li>
+            <button
+              class={deviceConfig.active_bank === bank.name
+                ? "active"
+                : undefined}
+              on:click={() => changeBank(bank.name)}>{bank.name}</button
+            >
+          </li>
+        {/each}
+      </ul>
+    {:else}
+      <p>No results</p>
+    {/if}
   </div>
 </div>
 
@@ -81,6 +97,10 @@
     flex-direction: column;
     max-height: 100%;
     overflow-y: auto;
+  }
+  .list-wrapper p {
+    text-align: center;
+    color: #fff;
   }
   .bank-listing.collapsed {
     width: 45px;
