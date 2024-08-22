@@ -6,12 +6,12 @@
   import { get } from "svelte/store";
 
   let deviceConfig = get(store).deviceConfig;
-  let activeBank = deviceConfig?.banks.find(
+  let activeBank = deviceConfig.banks.find(
     (bank) => bank.name === deviceConfig?.active_bank
   );
   const unsubscribe = store.subscribe((value) => {
     deviceConfig = value.deviceConfig;
-    activeBank = deviceConfig?.banks.find(
+    activeBank = deviceConfig.banks.find(
       (bank) => bank.name === deviceConfig?.active_bank
     );
   });
@@ -24,19 +24,20 @@
   onDestroy(unsubscribe);
 
   const mapRow = (text: string) => {
-    const chars = text.split("").slice(0, 16);
-    for (let i = chars.length; i < 16; i++) {
+    const textMaxLength = 12;
+    const chars = text.split("").slice(0, textMaxLength);
+    for (let i = chars.length; i < textMaxLength; i++) {
       chars.push("");
     }
     return chars;
   };
 
   $: bankNameChars = mapRow(activeBank?.name ?? "");
-  $: presetNameChars = mapRow(deviceConfig?.active_preset ?? "");
+  $: presetNameChars = mapRow(deviceConfig.active_preset ?? "");
 </script>
 
 <div class="bank-display">
-  {#if activeBank && deviceConfig}
+  {#if activeBank}
     <div class="bank-header">
       <div class="bank-details">
         <div class="title-row">
@@ -49,6 +50,7 @@
             <span class="char-wrapper"><span>{char}</span></span>
           {/each}
         </div>
+        <div class="glass-overlay" />
       </div>
       <div class="preset-container">
         <p>Preset</p>
@@ -73,6 +75,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow-x: auto;
+    min-width: 0;
+    max-height: 100vh;
   }
   .bank-header {
     display: flex;
@@ -90,13 +95,15 @@
     border-left: 5px solid var(--gray-3);
     border-right: 5px solid var(--gray-2);
     border-bottom: 5px solid var(--gray-2);
-    box-shadow: 0 0 20px rgba(0,0,0, 0.5);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    min-width: var(--content-min-width);
   }
   .bank-details {
     padding: 5px;
     font-size: 14px;
     height: 100px;
-    width: 496px;
+    width: 369px;
+    min-width: 369px;
     color: var(--white-blue);
     letter-spacing: 3px;
     border: 5px var(--blue-5) outset;
@@ -105,18 +112,27 @@
     flex-direction: column;
     justify-content: space-between;
     background: linear-gradient(45deg, var(--blue-1), var(--blue-2));
+    position: relative;
   }
-  .title-row{
+  .glass-overlay {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(35deg,#5a77c733, #0729ec2f, #8199da1c, #2b54c41f);
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .title-row {
     flex: 1;
     display: flex;
     flex-direction: row;
     gap: 5px;
   }
-  .title-row:first-child .char-wrapper{
+  .title-row:first-child .char-wrapper {
     font-size: 22px;
     font-weight: bold;
   }
-  .char-wrapper{
+  .char-wrapper {
     flex: 1;
     font-size: 18px;
     display: flex;

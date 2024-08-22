@@ -17,17 +17,47 @@
     font-family: 'LoganDark';
   }
 
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  *:hover::-webkit-scrollbar-thumb {
+    border: 2px solid var(--blue-4);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--blue-4);
+  }
+
   p,
   h1,
   h2,
   h3 {
     margin: 0;
   }
+
+  input {
+    min-width: 0;
+    padding: 5px 10px;
+  }
+
   :root {
     --whitespace-tiny: 1px;
     --whitespace-small: 3px;
     --whitespace-medium: 5px;
     --whitespace-large: 12px;
+
+    --content-min-width: 525px;
 
     --blue-1: #121f3a;
     --blue-2: #14255e;
@@ -43,9 +73,11 @@
 
     --white-blue: #BDFFFE;
   }
+
   button {
     cursor: pointer;
   }
+
   @font-face {
     font-family: 'LoganDark';
     src: url('/fonts/hd44780.otf');

@@ -153,6 +153,9 @@
     background-color: var(--background-color-regular);
     padding: var(--whitespace-large);
     gap: 9px;
+    min-width: var(--content-min-width);
+    min-height: 0;
+    overflow-y: overlay;
   }
   .message-row {
     display: flex;

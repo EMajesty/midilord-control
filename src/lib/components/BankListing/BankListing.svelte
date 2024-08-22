@@ -29,11 +29,13 @@
 </script>
 
 <div class={collapsed ? "bank-listing collapsed" : "bank-listing"}>
-  <div class="list-wrapper">
-  {#if deviceConfig}
+  <div class="list-functions">
+    <input class="search-input" />
     <button class="collapse-button" on:click={collapse}
       >{collapsed ? ">" : "<"}</button
     >
+  </div>
+  <div class="list-wrapper">
     <ul>
       {#each deviceConfig.banks as bank}
         <li>
@@ -46,8 +48,7 @@
         </li>
       {/each}
     </ul>
-  {/if}
-</div>
+  </div>
 </div>
 
 <style>
@@ -56,9 +57,18 @@
     border-radius: 0 0 16px 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.26);
     border-right: 1px solid rgba(18, 19, 17, 0.26);
-    width: max(100px, 20%);
-    display: flex;
+    width: clamp(200px, 250px, 50vw);
     background: linear-gradient(-45deg, #121311f1, rgba(39, 42, 35, 0.849));
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-functions {
+    padding: var(--whitespace-large);
+    padding-right: 6px;
+    display: flex;
+    gap: 5px;
   }
   .list-wrapper {
     background: rgba(45, 48, 43, 0.431);
@@ -69,12 +79,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-
+    max-height: 100%;
+    overflow-y: auto;
   }
   .bank-listing.collapsed {
-    width: initial;
+    width: 45px;
   }
-  .bank-listing.collapsed ul {
+  .bank-listing.collapsed *:not(.list-functions):not(.collapse-button) {
     display: none;
   }
   .bank-listing ul {
@@ -103,8 +114,5 @@
   }
   .bank-listing li button:hover::before {
     content: "> ";
-  }
-  .bank-listing .collapse-button {
-    margin-left: auto;
   }
 </style>
