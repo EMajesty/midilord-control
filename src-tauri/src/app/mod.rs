@@ -3,6 +3,9 @@
 
 mod handlers;
 mod commands;
+mod generate_test_data;
+mod structs;
+mod constants;
 
 /// Run Tauri builder to initialize the rust runtime.
 pub fn initialize_tauri(){
