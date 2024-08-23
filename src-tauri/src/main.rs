@@ -1,35 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod app;
+
 use std::error::Error;
 use std::io::{stdin, stdout, Write};
 use midir::{Ignore, MidiInput};
-use serde_json::Value;
-use tauri::Manager;
-
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-    config: String,
-}
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn update_device_config(handle: tauri::AppHandle, config: &str) {
-    // TODO actual logic
-    let object: Value = serde_json::from_str(config).unwrap();
-    let device_config = object.to_string();
-    handle.emit_all("config_updated", Payload { config: device_config }).unwrap();
-}
-
-#[tauri::command]
-fn connect_device(handle: tauri::AppHandle) {
-    // TODO read from device
-    let config_path = handle.path_resolver()
-        .resolve_resource("sampleData/deviceConfig.json")
-        .expect("failed to read JSON");
-    let device_config = std::fs::read_to_string(&config_path).expect("failed to read JSON");
-    handle.emit_all("device_connected", Payload { config: device_config }).unwrap();
-}
 
 fn parse_sysex_message(message: &[u8]) -> String {
     // We expect the message to be
@@ -66,10 +42,7 @@ fn calculate_checksum(message: &[u8]) -> u8 {
 
 fn main() {
     run().unwrap();
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![update_device_config, connect_device])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    app::initialize_tauri();
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
