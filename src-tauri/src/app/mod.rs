@@ -8,9 +8,16 @@ mod structs;
 mod constants;
 
 /// Run Tauri builder to initialize the rust runtime.
-pub fn initialize_tauri(){
-  tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![commands::update_device_config, commands::connect_device])
+pub fn initialize_tauri() {
+    tauri::Builder
+        ::default()
+        .invoke_handler(
+            tauri::generate_handler![
+                commands::update_device_config,
+                commands::connect_device,
+                commands::switch_bank
+            ]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -6,11 +6,13 @@ pub struct Config {
   active_bank: u8,
   active_preset: u8,
 }
-pub fn construct_config(active_bank: u8, active_preset: u8) -> Config {
-  return Config {
-    active_bank,
-    active_preset,
-  }
+impl Config {
+    pub fn new(active_bank: u8, active_preset: u8) -> Self {
+      return Self {
+        active_bank,
+        active_preset,
+      }
+    }
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -18,11 +20,13 @@ pub struct Bank {
   id: u8,
   name: String,
 }
-pub fn construct_bank(id: u8, name: String) -> Bank {
-  return Bank {
-    id,
-    name,
-  }
+impl Bank {
+    pub fn new(id: u8, name: String) -> Bank {
+      return Bank {
+        id,
+        name,
+      }
+    }
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -30,11 +34,13 @@ pub struct Preset {
   id: u8,
   name: String,
 }
-pub fn construct_preset(id: u8, name: String) -> Preset {
-  return Preset {
-    id,
-    name,
-  }
+impl Preset {
+    pub fn new(id: u8, name: String) -> Preset {
+      return Preset {
+        id,
+        name,
+      }
+    }
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -42,9 +48,11 @@ pub struct Message {
   message_action: String,
   message_type: String,
 }
-pub fn construct_message(message_action: String, message_type: String) -> Message {
-  return Message {
-    message_action,
-    message_type,
-  }
+impl Message {
+    pub fn new(message_action: String, message_type: String) -> Message {
+      return Message {
+        message_action,
+        message_type,
+      }
+    }
 }

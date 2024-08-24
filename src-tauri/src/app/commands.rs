@@ -18,9 +18,17 @@ pub fn update_device_config(handle: tauri::AppHandle, config: &str) {
 #[tauri::command]
 pub fn connect_device(handle: tauri::AppHandle) {
     // TODO read from device
-    let config_path = handle.path_resolver()
+    let config_path = handle
+        .path_resolver()
         .resolve_resource("sampleData/deviceConfig.json")
         .expect("failed to read JSON");
     let device_config = std::fs::read_to_string(&config_path).expect("failed to read JSON");
     handlers::emit_connection_established(handle, device_config);
+}
+
+/// Command for switching active bank
+#[tauri::command]
+pub fn switch_bank(id: u8) {
+    println!("Switching bank");
+    println!("{:b}", id);
 }
