@@ -5,9 +5,11 @@
   import { onDestroy, onMount } from "svelte";
   import { store } from "../store";
   import {
+    getBanksUpdatedListener,
     getBankSwitchedListener,
     getConnectionListener,
     getMessageMovedListener,
+    getPresetsUpdatedListener,
     getPresetSwitchedListener,
   } from "$lib/utils/utils";
   import { get } from "svelte/store";
@@ -34,11 +36,15 @@
     const bankSwitchedListener = getBankSwitchedListener();
     const presetSwitchedListener = getPresetSwitchedListener();
     const messageMovedListener = getMessageMovedListener();
+    const banksUpdatedListener = getBanksUpdatedListener();
+    const presetsUpdatedListener = getPresetsUpdatedListener();
     return () => {
       connectionListener.then((unlisten) => unlisten());
       bankSwitchedListener.then((unlisten) => unlisten());
       presetSwitchedListener.then((unlisten) => unlisten());
       messageMovedListener.then((unlisten) => unlisten());
+      banksUpdatedListener.then((unlisten) => unlisten());
+      presetsUpdatedListener.then((unlisten) => unlisten());
     };
   });
 
@@ -82,7 +88,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 2;
+    z-index: 5;
     height: 100%;
     width: 100%;
     background: #0729ec41;
@@ -106,7 +112,7 @@
   }
   .disconnect-button {
     position: absolute;
-    top: 10px;
+    bottom: 10px;
     right: 10px;
   }
 </style>

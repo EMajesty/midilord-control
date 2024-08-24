@@ -29,8 +29,12 @@ impl State {
   pub fn insert_bank(&mut self, bank: structs::Bank) {
     self.banks.insert(bank.get_id(), bank);
   }
-  pub fn get_active_bank(&self) -> Option<&structs::Bank> {
-    return self.banks.get(&self.active_bank);
+  pub fn rename_bank(&mut self, name: String) {
+    let active_bank = &mut self.active_bank;
+    self.banks.insert(
+      active_bank.clone(),
+      structs::Bank::new(active_bank.clone(), name)
+    );
   }
   pub fn get_banks(&self) -> Vec<structs::Bank> {
     let mut banks: Vec<structs::Bank> = self.banks.values().cloned().collect();
@@ -41,8 +45,13 @@ impl State {
   pub fn insert_preset(&mut self, bank_id: u8, preset: structs::Preset) {
     self.presets.insert((bank_id, preset.get_id()), preset);
   }
-  pub fn get_active_preset(&self) -> Option<&structs::Preset> {
-    return self.presets.get(&(self.active_bank, self.active_preset));
+  pub fn rename_preset(&mut self, name: String) {
+    let active_bank = &mut self.active_bank;
+    let active_preset = &mut self.active_preset;
+    self.presets.insert(
+      (active_bank.clone(), active_preset.clone()),
+      structs::Preset::new(active_preset.clone(), name)
+    );
   }
   pub fn get_presets(&self) -> Vec<structs::Preset> {
     let mut presets: Vec<structs::Preset> = Vec::new();
