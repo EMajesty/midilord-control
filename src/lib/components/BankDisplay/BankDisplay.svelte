@@ -5,20 +5,25 @@
   import { store } from "../../../store";
   import { get } from "svelte/store";
 
-  let deviceConfig = get(store).deviceConfig;
-  let activeBank = deviceConfig.banks.find(
-    (bank) => bank.name === deviceConfig?.active_bank
+  let deviceConfig = get(store).config;
+  let presets = get(store).presets;
+  let banks = get(store).banks;
+  let activePreset = presets.find(
+    (preset) => preset.id === deviceConfig.active_preset,
   );
+  let activeBank = banks.find((bank) => bank.id === deviceConfig.active_bank);
   const unsubscribe = store.subscribe((value) => {
-    deviceConfig = value.deviceConfig;
-    activeBank = deviceConfig.banks.find(
-      (bank) => bank.name === deviceConfig?.active_bank
+    deviceConfig = value.config;
+    presets = value.presets;
+    banks = value.banks;
+    activeBank = value.banks.find(
+      (bank) => bank.id === deviceConfig.active_bank,
     );
   });
 
-  function changePreset(presetName: string) {
+  function changePreset(id: number) {
     if (!deviceConfig) return;
-    updateConfig({ ...deviceConfig, active_preset: presetName });
+    updateConfig({ ...deviceConfig, active_preset: id });
   }
 
   onDestroy(unsubscribe);
@@ -33,7 +38,7 @@
   };
 
   $: bankNameChars = mapRow(activeBank?.name ?? "");
-  $: presetNameChars = mapRow(deviceConfig.active_preset ?? "");
+  $: presetNameChars = mapRow(activePreset?.name ?? "");
 </script>
 
 <div class="bank-display">
@@ -55,12 +60,12 @@
       <div class="preset-container">
         <p>Preset</p>
         <div class="preset-buttons">
-          {#each activeBank.presets as preset, i}
+          {#each presets as preset, i}
             <button
-              class={preset.name === deviceConfig.active_preset
+              class={preset.id === deviceConfig.active_preset
                 ? "selected"
                 : undefined}
-              on:click={() => changePreset(preset.name)}>{i + 1}</button
+              on:click={() => changePreset(preset.id)}>{i + 1}</button
             >
           {/each}
         </div>
@@ -117,7 +122,13 @@
   .glass-overlay {
     width: 100%;
     height: 100%;
-    background: linear-gradient(35deg,#5a77c733, #0729ec2f, #8199da1c, #2b54c41f);
+    background: linear-gradient(
+      35deg,
+      #5a77c733,
+      #0729ec2f,
+      #8199da1c,
+      #2b54c41f
+    );
     position: absolute;
     left: 0;
     top: 0;

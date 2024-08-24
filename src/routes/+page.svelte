@@ -5,12 +5,15 @@
   import BankListing from "$lib/components/BankListing/BankListing.svelte";
   import { onDestroy, onMount } from "svelte";
   import { store } from "../store";
+  import { getConnectionListener } from "$lib/utils/utils";
+  import { get } from "svelte/store";
 
   let connected: boolean;
+  let configLoading = get(store).configLoading;
   const unsubscribe = store.subscribe((value) => {
     connected = value.connected;
+    configLoading = value.configLoading;
   });
-  let configLoading = false;
 
   const connect = () => {
     configLoading = true;
@@ -23,17 +26,7 @@
   };
 
   onMount(() => {
-    const connectionListener = listen<{ config: string }>(
-      "device_connected",
-      (event) => {
-        store.update((value) => ({
-          ...value,
-          connected: true,
-          deviceConfig: JSON.parse(event.payload.config),
-        }));
-        configLoading = false;
-      }
-    );
+    const connectionListener = getConnectionListener();
     const updateListener = listen<{ config: string }>(
       "config_updated",
       (event) => {
@@ -42,7 +35,7 @@
           deviceConfig: JSON.parse(event.payload.config),
         }));
         configLoading = false;
-      }
+      },
     );
     return () => {
       connectionListener.then((unlisten) => unlisten());

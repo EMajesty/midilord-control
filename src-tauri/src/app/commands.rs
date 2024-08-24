@@ -17,15 +17,8 @@ pub fn update_device_config(handle: tauri::AppHandle, config: &str) {
 /// TODO TO BE REMOVED, SHOULD BE DONE AUTOMATICALLY
 #[tauri::command]
 pub fn connect_device(handle: tauri::AppHandle) {
-  // TODO read from device
-  let config_path = handle
-    .path_resolver()
-    .resolve_resource("sampleData/deviceConfig.json")
-    .expect("failed to read JSON");
-  let device_config = std::fs
-    ::read_to_string(&config_path)
-    .expect("failed to read JSON");
-  handlers::emit_connection_established(handle, device_config);
+  // TODO read from device and update global state
+  handlers::emit_connection_established(handle);
 }
 
 /// Command for switching active bank
