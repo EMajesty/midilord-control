@@ -7,12 +7,12 @@ pub struct Config {
   active_preset: u8,
 }
 impl Config {
-    pub fn new(active_bank: u8, active_preset: u8) -> Self {
-      return Self {
-        active_bank,
-        active_preset,
-      }
-    }
+  pub fn new(active_bank: u8, active_preset: u8) -> Self {
+    return Self {
+      active_bank,
+      active_preset,
+    };
+  }
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -21,12 +21,15 @@ pub struct Bank {
   name: String,
 }
 impl Bank {
-    pub fn new(id: u8, name: String) -> Bank {
-      return Bank {
-        id,
-        name,
-      }
-    }
+  pub fn get_id(&self) -> u8 {
+    self.id
+  }
+  pub fn new(id: u8, name: String) -> Bank {
+    return Bank {
+      id,
+      name,
+    };
+  }
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -35,12 +38,15 @@ pub struct Preset {
   name: String,
 }
 impl Preset {
-    pub fn new(id: u8, name: String) -> Preset {
-      return Preset {
-        id,
-        name,
-      }
-    }
+  pub fn get_id(&self) -> u8 {
+    self.id
+  }
+  pub fn new(id: u8, name: String) -> Preset {
+    return Preset {
+      id,
+      name,
+    };
+  }
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -49,10 +55,10 @@ pub struct Message {
   message_type: String,
 }
 impl Message {
-    pub fn new(message_action: String, message_type: String) -> Message {
-      return Message {
-        message_action,
-        message_type,
-      }
-    }
+  pub fn new(message_action: String, message_type: String) -> Message {
+    return Message {
+      message_action,
+      message_type,
+    };
+  }
 }
