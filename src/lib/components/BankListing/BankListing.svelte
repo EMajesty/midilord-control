@@ -1,38 +1,31 @@
 <script lang="ts">
-  import { updateConfig } from "$lib/utils/utils";
+  import { selectBank } from "$lib/utils/utils";
   import { get } from "svelte/store";
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
 
   let searchText = "";
   let collapsed = false;
-  let deviceConfig = get(store).deviceConfig;
+  let deviceConfig = get(store).config;
+  let banks = get(store).banks;
   const unsubscribe = store.subscribe((value) => {
-    deviceConfig = value.deviceConfig;
+    deviceConfig = value.config;
+    banks = value.banks;
   });
-  $: banks = searchText
-    ? deviceConfig.banks.filter((bank) => bank.name.includes(searchText))
-    : deviceConfig.banks;
+  $: bankList = searchText
+    ? banks.filter((bank) =>
+        bank.name.toLowerCase().includes(searchText.toLowerCase()),
+      )
+    : banks;
 
   function collapse() {
     collapsed = !collapsed;
   }
 
-  function changeBank(bankName: string) {
-    const newBank = deviceConfig?.banks.find((bank) => bank.name === bankName);
-    if (!deviceConfig || !newBank) return;
-    const newPreset = newBank.presets[0];
-    updateConfig({
-      ...deviceConfig,
-      active_bank: bankName,
-      active_preset: newPreset.name,
-    });
-  }
-
   function onSearch(
     e: Event & {
       currentTarget: EventTarget & HTMLInputElement;
-    }
+    },
   ) {
     searchText = e.currentTarget.value;
   }
@@ -48,15 +41,15 @@
     >
   </div>
   <div class="list-wrapper">
-    {#if banks.length}
+    {#if bankList.length}
       <ul>
-        {#each banks as bank}
+        {#each bankList as bank}
           <li>
             <button
-              class={deviceConfig.active_bank === bank.name
+              class={deviceConfig.active_bank === bank.id
                 ? "active"
                 : undefined}
-              on:click={() => changeBank(bank.name)}>{bank.name}</button
+              on:click={() => selectBank(bank.id)}>{bank.name}</button
             >
           </li>
         {/each}

@@ -2,32 +2,18 @@
   import { get } from "svelte/store";
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
-  import { updateConfig } from "$lib/utils/utils";
+  import { moveMessage } from "$lib/utils/utils";
 
   type DndDragEvent = DragEvent & {
     currentTarget: EventTarget & HTMLDivElement;
   };
 
-  let deviceConfig = get(store).deviceConfig;
-  let activeBank = deviceConfig?.banks.find(
-    (bank) => bank.name === deviceConfig?.active_bank
-  );
-
-  let activePreset = activeBank?.presets.find(
-    (preset) => preset.name === deviceConfig?.active_preset
-  );
-
-  let messages = activePreset?.messages;
+  let deviceConfig = get(store).config;
+  let messages = get(store).messages;
 
   const unsubscribe = store.subscribe((value) => {
-    deviceConfig = value.deviceConfig;
-    activeBank = deviceConfig?.banks.find(
-      (bank) => bank.name === deviceConfig?.active_bank
-    );
-    activePreset = activeBank?.presets.find(
-      (preset) => preset.name === deviceConfig?.active_preset
-    );
-    messages = activePreset?.messages;
+    deviceConfig = value.config;
+    messages = value.messages;
   });
 
   function dragStart(event: DndDragEvent, messageIndex: number) {
@@ -76,7 +62,7 @@
     const messageIndex = data.messageIndex;
     if (messageIndex === targetIndex) return;
     const newMessages = [...messages];
-    const [movedMessage] = newMessages.splice(messageIndex, 1);
+    newMessages.splice(messageIndex, 1);
     let insertToIndex = 0;
     const insertToBefore = dragOverMiddlePoint(event);
     if (insertToBefore) {
@@ -94,26 +80,7 @@
             ? targetIndex
             : targetIndex + 1;
     }
-    updateConfig({
-      ...deviceConfig,
-      banks: deviceConfig.banks.map((bank) => {
-        if (bank.name !== deviceConfig?.active_bank) return bank;
-        return {
-          ...bank,
-          presets: bank.presets.map((preset) => {
-            if (preset.name !== deviceConfig?.active_preset) return preset;
-            return {
-              ...preset,
-              messages: [
-                ...newMessages.slice(0, insertToIndex),
-                movedMessage,
-                ...newMessages.slice(insertToIndex, newMessages.length),
-              ],
-            };
-          }),
-        };
-      }),
-    });
+    moveMessage(messageIndex, insertToIndex);
   }
 
   onDestroy(unsubscribe);
@@ -135,11 +102,11 @@
         </div>
         <div class="message-column">
           <b>Action</b>
-          <p>{message.action}</p>
+          <p>{message.message_action}</p>
         </div>
         <div class="message-column">
           <b>Type</b>
-          <p>{message.type}</p>
+          <p>{message.message_type}</p>
         </div>
       </div>
     {/each}

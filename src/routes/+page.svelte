@@ -1,16 +1,23 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri";
-  import { listen } from "@tauri-apps/api/event";
   import BankDisplay from "$lib/components/BankDisplay/BankDisplay.svelte";
   import BankListing from "$lib/components/BankListing/BankListing.svelte";
   import { onDestroy, onMount } from "svelte";
   import { store } from "../store";
+  import {
+    getBankSwitchedListener,
+    getConnectionListener,
+    getMessageMovedListener,
+    getPresetSwitchedListener,
+  } from "$lib/utils/utils";
+  import { get } from "svelte/store";
 
   let connected: boolean;
+  let configLoading = get(store).configLoading;
   const unsubscribe = store.subscribe((value) => {
     connected = value.connected;
+    configLoading = value.configLoading;
   });
-  let configLoading = false;
 
   const connect = () => {
     configLoading = true;
@@ -23,30 +30,15 @@
   };
 
   onMount(() => {
-    const connectionListener = listen<{ config: string }>(
-      "device_connected",
-      (event) => {
-        store.update((value) => ({
-          ...value,
-          connected: true,
-          deviceConfig: JSON.parse(event.payload.config),
-        }));
-        configLoading = false;
-      }
-    );
-    const updateListener = listen<{ config: string }>(
-      "config_updated",
-      (event) => {
-        store.update((value) => ({
-          ...value,
-          deviceConfig: JSON.parse(event.payload.config),
-        }));
-        configLoading = false;
-      }
-    );
+    const connectionListener = getConnectionListener();
+    const bankSwitchedListener = getBankSwitchedListener();
+    const presetSwitchedListener = getPresetSwitchedListener();
+    const messageMovedListener = getMessageMovedListener();
     return () => {
       connectionListener.then((unlisten) => unlisten());
-      updateListener.then((unlisten) => unlisten());
+      bankSwitchedListener.then((unlisten) => unlisten());
+      presetSwitchedListener.then((unlisten) => unlisten());
+      messageMovedListener.then((unlisten) => unlisten());
     };
   });
 

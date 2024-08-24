@@ -7,6 +7,30 @@
   <title>Midilord Control</title>
   %sveltekit.head%
 </head>
+<script>
+  // TODO check if this can be defined elsewhere
+  class Uint8 {
+    constructor(value) {
+      if (value < 0 || value > 255) {
+        throw new Error(`Value '${value}' out of bounds, expected 0-255`);
+      }
+      const u8 = new Uint8Array(1);
+      u8[0] = value;
+      this.value = u8[0];
+    }
+    get() {
+      return this.value;
+    }
+  }
+
+  Object.defineProperty(Number.prototype, "toUint8", {
+    value: function () {
+      const u8 = new Uint8(this);
+      return u8.get();
+    },
+    writable: true,
+  });
+</script>
 <style>
   body {
     margin: 0;
