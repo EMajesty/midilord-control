@@ -15,11 +15,24 @@ export const selectPreset = (id: number) => {
   });
 }
 
+
 export const moveMessage = (messageIndex: number, targetIndex: number) => {
   invoke("move_message", {
     messageIndex: messageIndex.toUint8(),
     targetIndex: targetIndex.toUint8()
-  })
+  });
+}
+
+export const renameBank = (name: string) => {
+  invoke("rename_bank", {
+    name
+  });
+}
+
+export const renamePreset = (name: string) => {
+  invoke("rename_preset", {
+    name
+  });
 }
 
 const getUpdateStoreCallback = (staticValues?: Partial<Store>) => ({ payload }: { payload: Partial<Store> }) => {
@@ -77,4 +90,18 @@ export const getMessageMovedListener = () => {
     "message_moved",
     getUpdateStoreCallback(),
   );
+}
+
+interface BankUpdatePayload {
+  banks: Bank[];
+}
+export const getBanksUpdatedListener = () => {
+  return listen<BankUpdatePayload>("banks_updated", getUpdateStoreCallback())
+}
+
+interface PresetUpdatePayload {
+  presets: Preset[];
+}
+export const getPresetsUpdatedListener = () => {
+  return listen<PresetUpdatePayload>("presets_updated", getUpdateStoreCallback())
 }

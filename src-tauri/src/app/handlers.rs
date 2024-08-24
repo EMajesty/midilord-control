@@ -80,3 +80,33 @@ pub fn emit_message_moved(handle: tauri::AppHandle) {
       .unwrap();
   }
 }
+
+#[derive(Clone, serde::Serialize)]
+struct BankUpdatePayload {
+  banks: Vec<structs::Bank>,
+}
+/// Sends updated list of banks on update to the UI.
+pub fn emit_banks_updated(handle: tauri::AppHandle) {
+  unsafe {
+    handle
+      .emit_all("banks_updated", BankUpdatePayload {
+        banks: STATE.get_banks(),
+      })
+      .unwrap();
+  }
+}
+
+#[derive(Clone, serde::Serialize)]
+struct PresetUpdatePayload {
+  presets: Vec<structs::Preset>,
+}
+/// Sends updated list of banks on update to the UI.
+pub fn emit_presets_updated(handle: tauri::AppHandle) {
+  unsafe {
+    handle
+      .emit_all("presets_updated", PresetUpdatePayload {
+        presets: STATE.get_presets(),
+      })
+      .unwrap();
+  }
+}

@@ -44,3 +44,21 @@ pub fn move_message(
     handlers::emit_message_moved(handle)
   }
 }
+
+/// Command for renaming active bank
+#[tauri::command]
+pub fn rename_bank(handle: tauri::AppHandle, name: String) {
+  unsafe {
+    STATE.rename_bank(name);
+    handlers::emit_banks_updated(handle);
+  }
+}
+
+/// Command for renaming active preset
+#[tauri::command]
+pub fn rename_preset(handle: tauri::AppHandle, name: String) {
+  unsafe {
+    STATE.rename_preset(name);
+    handlers::emit_presets_updated(handle);
+  }
+}

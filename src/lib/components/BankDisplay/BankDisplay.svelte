@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { selectPreset } from "$lib/utils/utils";
+  import { selectPreset, renameBank, renamePreset } from "$lib/utils/utils";
   import { onDestroy } from "svelte";
   import MessageList from "./MessageList.svelte";
   import { store } from "../../../store";
@@ -34,7 +34,7 @@
 </script>
 
 <div class="bank-display">
-  {#if activeBank}
+  {#if activeBank && activePreset}
     <div class="bank-header">
       <div class="bank-details">
         <div class="title-row">
@@ -63,6 +63,24 @@
         </div>
       </div>
     </div>
+    <input id="open-settings" type="checkbox" />
+    <label class="settings-label" for="open-settings">Settings</label>
+    <div class="bank-settings">
+      <label>
+        <span>Bank name</span>
+        <input
+          value={activeBank.name}
+          on:change={(e) => renameBank(e.currentTarget.value)}
+        />
+      </label>
+      <label>
+        <span>Preset name</span>
+        <input
+          value={activePreset.name}
+          on:change={(e) => renamePreset(e.currentTarget.value)}
+        />
+      </label>
+    </div>
     <MessageList />
   {/if}
 </div>
@@ -75,6 +93,7 @@
     overflow-x: auto;
     min-width: 0;
     max-height: 100vh;
+    position: relative;
   }
   .bank-header {
     display: flex;
@@ -94,6 +113,7 @@
     border-bottom: 5px solid var(--gray-2);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     min-width: var(--content-min-width);
+    z-index: 2;
   }
   .bank-details {
     padding: 5px;
@@ -184,5 +204,46 @@
   .preset-container button.selected {
     background: linear-gradient(var(--gray-1), var(--gray-2));
     color: var(--blue-5);
+  }
+  .bank-settings {
+    background-color: var(--gray-3);
+    padding: var(--whitespace-large) 17px;
+    border-bottom: 5px solid var(--gray-4);
+    translate: 0 -100%;
+    width: calc(100%);
+    top: 134px;
+    right: 0;
+    position: absolute;
+    z-index: 1;
+    transition: translate 0.15s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    gap: var(--whitespace-large);
+  }
+  .bank-settings label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--whitespace-medium);
+  }
+  .bank-settings label span {
+    font-size: 10px;
+    padding-inline: var(--whitespace-medium);
+    color: #fff;
+  }
+  .settings-label {
+    position: fixed;
+    right: 17px;
+    top: 17px;
+    z-index: 3;
+    color: #fff;
+  }
+  #open-settings {
+    display: none;
+  }
+  #open-settings:checked ~ .settings-label {
+    color: var(--blue-5);
+  }
+  #open-settings:checked ~ .bank-settings {
+    translate: 0 0;
   }
 </style>

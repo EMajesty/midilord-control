@@ -18,7 +18,9 @@ pub fn initialize_tauri() {
         commands::connect_device,
         commands::update_selected_bank,
         commands::update_selected_preset,
-        commands::move_message
+        commands::move_message,
+        commands::rename_bank,
+        commands::rename_preset
       ]
     )
     .run(tauri::generate_context!())
