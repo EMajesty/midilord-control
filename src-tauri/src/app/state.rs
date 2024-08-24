@@ -18,6 +18,14 @@ pub struct State {
 }
 
 impl State {
+  pub fn set_active_bank(&mut self, id: u8) {
+    self.active_bank = id;
+  }
+
+  pub fn set_active_preset(&mut self, id: u8) {
+    self.active_preset = id;
+  }
+
   pub fn insert_bank(&mut self, bank: structs::Bank) {
     self.banks.insert(bank.get_id(), bank);
   }
@@ -25,7 +33,9 @@ impl State {
     return self.banks.get(&self.active_bank);
   }
   pub fn get_banks(&self) -> Vec<structs::Bank> {
-    return self.banks.values().cloned().collect();
+    let mut banks: Vec<structs::Bank> = self.banks.values().cloned().collect();
+    banks.sort_by_key(|a| a.get_id());
+    return banks;
   }
 
   pub fn insert_preset(&mut self, bank_id: u8, preset: structs::Preset) {
@@ -41,6 +51,7 @@ impl State {
         presets.push(value);
       }
     }
+    presets.sort_by_key(|a| a.get_id());
     return presets;
   }
 
@@ -52,8 +63,22 @@ impl State {
   ) {
     self.messages.insert((bank_id, preset_id), messages);
   }
-  pub fn get_active_messages(&self) -> Option<&Vec<structs::Message>> {
-    return self.messages.get(&(self.active_bank, self.active_preset));
+  pub fn get_active_messages(&self) -> Vec<structs::Message> {
+    let messages = self.messages.get(&(self.active_bank, self.active_preset));
+    match messages {
+      Some(m) => m.to_vec(),
+      None => panic!("No messages found for current preset!"),
+    }
+  }
+  pub fn move_message(&mut self, message_index: u8, target_index: u8) {
+    let messages = &mut self.get_active_messages();
+    let message = messages.remove(message_index.into());
+    messages.insert(target_index.into(), message.clone());
+    self.insert_messages(
+      self.active_bank,
+      self.active_preset,
+      messages.to_vec()
+    );
   }
 }
 

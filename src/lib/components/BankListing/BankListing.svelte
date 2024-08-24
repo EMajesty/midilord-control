@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { updateConfig } from "$lib/utils/utils";
+  import { selectBank } from "$lib/utils/utils";
   import { get } from "svelte/store";
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
@@ -13,18 +13,13 @@
     banks = value.banks;
   });
   $: bankList = searchText
-    ? banks.filter((bank) => bank.name.includes(searchText))
+    ? banks.filter((bank) =>
+        bank.name.toLowerCase().includes(searchText.toLowerCase()),
+      )
     : banks;
 
   function collapse() {
     collapsed = !collapsed;
-  }
-
-  function changeBank(id: number) {
-    updateConfig({
-      active_bank: id,
-      active_preset: 0,
-    });
   }
 
   function onSearch(
@@ -54,7 +49,7 @@
               class={deviceConfig.active_bank === bank.id
                 ? "active"
                 : undefined}
-              on:click={() => changeBank(bank.id)}>{bank.name}</button
+              on:click={() => selectBank(bank.id)}>{bank.name}</button
             >
           </li>
         {/each}

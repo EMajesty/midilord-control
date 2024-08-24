@@ -5,7 +5,10 @@ use super::state::STATE;
 use super::structs;
 use super::constants;
 
-fn generate_struct_vector<T>(length: usize, callback: fn(u8) -> T) -> Vec<T> {
+fn generate_struct_vector<T>(
+  length: usize,
+  callback: impl Fn(u8) -> T
+) -> Vec<T> {
   let mut index = 0;
   return std::iter
     ::repeat_with(|| {
@@ -29,10 +32,13 @@ fn generate_presets() -> Vec<structs::Preset> {
   );
 }
 
-fn generate_messages() -> Vec<structs::Message> {
+fn generate_messages(
+  bank_name: String,
+  preset_name: String
+) -> Vec<structs::Message> {
   return generate_struct_vector(constants::MESSAGE_COUNT, |index|
     structs::Message::new(
-      format!("Action {}", index + 1),
+      format!("{}, {}, Action {}", bank_name, preset_name, index + 1),
       format!("Type {}", index + 1)
     )
   );
@@ -44,12 +50,18 @@ pub fn generate() {
     let banks = generate_banks();
     for bank in banks {
       let bank_id = bank.get_id();
+      let bank_name = bank.get_name();
       STATE.insert_bank(bank);
       let presets = generate_presets();
       for preset in presets {
         let preset_id = preset.get_id();
+        let preset_name = preset.get_name();
         STATE.insert_preset(bank_id, preset);
-        STATE.insert_messages(bank_id, preset_id, generate_messages());
+        STATE.insert_messages(
+          bank_id,
+          preset_id,
+          generate_messages(bank_name.clone(), preset_name)
+        );
       }
     }
   }

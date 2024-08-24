@@ -15,9 +15,10 @@ pub fn initialize_tauri() {
     ::default()
     .invoke_handler(
       tauri::generate_handler![
-        commands::update_device_config,
         commands::connect_device,
-        commands::switch_bank
+        commands::update_selected_bank,
+        commands::update_selected_preset,
+        commands::move_message
       ]
     )
     .run(tauri::generate_context!())

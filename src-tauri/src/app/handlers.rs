@@ -7,40 +7,76 @@ use super::state::STATE;
 use super::structs;
 
 #[derive(Clone, serde::Serialize)]
-struct Payload {
+struct ConfigPayload {
   config: structs::Config,
   banks: Vec<structs::Bank>,
   presets: Vec<structs::Preset>,
   messages: Vec<structs::Message>,
 }
 
-/// Sends updated device config to the UI.
-/// Takes in two parameters, current app handle and stringified JSON value of config.
-pub fn emit_config_update(handle: tauri::AppHandle, config: String) {
-  // TODO fix
-  // handle.emit_all("config_updated", Payload { config }).unwrap();
-}
-
 /// Tells the UI that device has been connected.
-/// Takes in two parameters, current app handle and stringified JSON value of config.
 pub fn emit_connection_established(handle: tauri::AppHandle) {
   unsafe {
-    let messages = STATE.get_active_messages();
-    match messages {
-      Some(m) => {
-        handle
-          .emit_all("device_connected", Payload {
-            config: structs::Config::new(
-              STATE.active_bank,
-              STATE.active_preset
-            ),
-            banks: STATE.get_banks(),
-            presets: STATE.get_presets(),
-            messages: m.clone(),
-          })
-          .unwrap();
-      }
-      None => { panic!("No messages created for current preset!") }
-    }
+    handle
+      .emit_all("device_connected", ConfigPayload {
+        config: structs::Config::new(STATE.active_bank, STATE.active_preset),
+        banks: STATE.get_banks(),
+        presets: STATE.get_presets(),
+        messages: STATE.get_active_messages(),
+      })
+      .unwrap();
+  }
+}
+
+#[derive(Clone, serde::Serialize)]
+struct BankPayload {
+  config: structs::Config,
+  presets: Vec<structs::Preset>,
+  messages: Vec<structs::Message>,
+}
+
+/// Sends selected bank details to the UI.
+pub fn emit_bank_switched(handle: tauri::AppHandle) {
+  unsafe {
+    handle
+      .emit_all("bank_switched", BankPayload {
+        config: structs::Config::new(STATE.active_bank, STATE.active_preset),
+        presets: STATE.get_presets(),
+        messages: STATE.get_active_messages(),
+      })
+      .unwrap();
+  }
+}
+
+#[derive(Clone, serde::Serialize)]
+struct PresetPayload {
+  config: structs::Config,
+  messages: Vec<structs::Message>,
+}
+
+/// Sends selected preset details to the UI.
+pub fn emit_preset_switched(handle: tauri::AppHandle) {
+  unsafe {
+    handle
+      .emit_all("preset_switched", PresetPayload {
+        config: structs::Config::new(STATE.active_bank, STATE.active_preset),
+        messages: STATE.get_active_messages(),
+      })
+      .unwrap();
+  }
+}
+
+#[derive(Clone, serde::Serialize)]
+struct MessagePayload {
+  messages: Vec<structs::Message>,
+}
+/// Sends selected preset details to the UI.
+pub fn emit_message_moved(handle: tauri::AppHandle) {
+  unsafe {
+    handle
+      .emit_all("message_moved", MessagePayload {
+        messages: STATE.get_active_messages(),
+      })
+      .unwrap();
   }
 }

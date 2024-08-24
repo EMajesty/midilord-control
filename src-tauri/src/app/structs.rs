@@ -24,6 +24,9 @@ impl Bank {
   pub fn get_id(&self) -> u8 {
     self.id
   }
+  pub fn get_name(&self) -> String {
+    self.name.clone()
+  }
   pub fn new(id: u8, name: String) -> Bank {
     return Bank {
       id,
@@ -40,6 +43,9 @@ pub struct Preset {
 impl Preset {
   pub fn get_id(&self) -> u8 {
     self.id
+  }
+  pub fn get_name(&self) -> String {
+    self.name.clone()
   }
   pub fn new(id: u8, name: String) -> Preset {
     return Preset {

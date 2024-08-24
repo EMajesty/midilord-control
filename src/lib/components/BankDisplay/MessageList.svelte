@@ -2,7 +2,7 @@
   import { get } from "svelte/store";
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
-  import { updateConfig } from "$lib/utils/utils";
+  import { moveMessage } from "$lib/utils/utils";
 
   type DndDragEvent = DragEvent & {
     currentTarget: EventTarget & HTMLDivElement;
@@ -62,7 +62,7 @@
     const messageIndex = data.messageIndex;
     if (messageIndex === targetIndex) return;
     const newMessages = [...messages];
-    const [movedMessage] = newMessages.splice(messageIndex, 1);
+    newMessages.splice(messageIndex, 1);
     let insertToIndex = 0;
     const insertToBefore = dragOverMiddlePoint(event);
     if (insertToBefore) {
@@ -80,26 +80,7 @@
             ? targetIndex
             : targetIndex + 1;
     }
-    updateConfig({
-      ...deviceConfig,
-      // banks: deviceConfig.banks.map((bank) => {
-      //   if (bank.name !== deviceConfig?.active_bank) return bank;
-      //   return {
-      //     ...bank,
-      //     presets: bank.presets.map((preset) => {
-      //       if (preset.name !== deviceConfig?.active_preset) return preset;
-      //       return {
-      //         ...preset,
-      //         messages: [
-      //           ...newMessages.slice(0, insertToIndex),
-      //           movedMessage,
-      //           ...newMessages.slice(insertToIndex, newMessages.length),
-      //         ],
-      //       };
-      //     }),
-      //   };
-      // }),
-    });
+    moveMessage(messageIndex, insertToIndex);
   }
 
   onDestroy(unsubscribe);

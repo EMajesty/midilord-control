@@ -1,17 +1,9 @@
 // src/commands.rs
 // Contains invokable commands for Tauri
 
-use serde_json::Value;
 use crate::app::handlers;
 
-/// Command for updating current device config.
-#[tauri::command]
-pub fn update_device_config(handle: tauri::AppHandle, config: &str) {
-  // TODO actual logic
-  let object: Value = serde_json::from_str(config).unwrap();
-  let device_config = object.to_string();
-  handlers::emit_config_update(handle, device_config);
-}
+use super::state::STATE;
 
 /// Command for connecting to the current device.
 /// TODO TO BE REMOVED, SHOULD BE DONE AUTOMATICALLY
@@ -23,7 +15,32 @@ pub fn connect_device(handle: tauri::AppHandle) {
 
 /// Command for switching active bank
 #[tauri::command]
-pub fn switch_bank(id: u8) {
-  println!("Switching bank");
-  println!("{:b}", id);
+pub fn update_selected_bank(handle: tauri::AppHandle, id: u8) {
+  unsafe {
+    STATE.set_active_bank(id);
+    STATE.set_active_preset(0);
+    handlers::emit_bank_switched(handle);
+  }
+}
+
+/// Command for switching active preset
+#[tauri::command]
+pub fn update_selected_preset(handle: tauri::AppHandle, id: u8) {
+  unsafe {
+    STATE.set_active_preset(id);
+    handlers::emit_preset_switched(handle);
+  }
+}
+
+/// Command for moving messages to another index
+#[tauri::command]
+pub fn move_message(
+  handle: tauri::AppHandle,
+  message_index: u8,
+  target_index: u8
+) {
+  unsafe {
+    STATE.move_message(message_index, target_index);
+    handlers::emit_message_moved(handle)
+  }
 }

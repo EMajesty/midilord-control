@@ -1,11 +1,15 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri";
-  import { listen } from "@tauri-apps/api/event";
   import BankDisplay from "$lib/components/BankDisplay/BankDisplay.svelte";
   import BankListing from "$lib/components/BankListing/BankListing.svelte";
   import { onDestroy, onMount } from "svelte";
   import { store } from "../store";
-  import { getConnectionListener } from "$lib/utils/utils";
+  import {
+    getBankSwitchedListener,
+    getConnectionListener,
+    getMessageMovedListener,
+    getPresetSwitchedListener,
+  } from "$lib/utils/utils";
   import { get } from "svelte/store";
 
   let connected: boolean;
@@ -27,19 +31,14 @@
 
   onMount(() => {
     const connectionListener = getConnectionListener();
-    const updateListener = listen<{ config: string }>(
-      "config_updated",
-      (event) => {
-        store.update((value) => ({
-          ...value,
-          deviceConfig: JSON.parse(event.payload.config),
-        }));
-        configLoading = false;
-      },
-    );
+    const bankSwitchedListener = getBankSwitchedListener();
+    const presetSwitchedListener = getPresetSwitchedListener();
+    const messageMovedListener = getMessageMovedListener();
     return () => {
       connectionListener.then((unlisten) => unlisten());
-      updateListener.then((unlisten) => unlisten());
+      bankSwitchedListener.then((unlisten) => unlisten());
+      presetSwitchedListener.then((unlisten) => unlisten());
+      messageMovedListener.then((unlisten) => unlisten());
     };
   });
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { updateConfig } from "$lib/utils/utils";
+  import { selectPreset } from "$lib/utils/utils";
   import { onDestroy } from "svelte";
   import MessageList from "./MessageList.svelte";
   import { store } from "../../../store";
@@ -8,23 +8,15 @@
   let deviceConfig = get(store).config;
   let presets = get(store).presets;
   let banks = get(store).banks;
-  let activePreset = presets.find(
+  $: activePreset = presets.find(
     (preset) => preset.id === deviceConfig.active_preset,
   );
-  let activeBank = banks.find((bank) => bank.id === deviceConfig.active_bank);
+  $: activeBank = banks.find((bank) => bank.id === deviceConfig.active_bank);
   const unsubscribe = store.subscribe((value) => {
     deviceConfig = value.config;
     presets = value.presets;
     banks = value.banks;
-    activeBank = value.banks.find(
-      (bank) => bank.id === deviceConfig.active_bank,
-    );
   });
-
-  function changePreset(id: number) {
-    if (!deviceConfig) return;
-    updateConfig({ ...deviceConfig, active_preset: id });
-  }
 
   onDestroy(unsubscribe);
 
@@ -65,7 +57,7 @@
               class={preset.id === deviceConfig.active_preset
                 ? "selected"
                 : undefined}
-              on:click={() => changePreset(preset.id)}>{i + 1}</button
+              on:click={() => selectPreset(preset.id)}>{i + 1}</button
             >
           {/each}
         </div>

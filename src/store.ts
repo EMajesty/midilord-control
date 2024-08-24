@@ -30,7 +30,7 @@ const getInitialConfig = (): Configs => {
   }
 }
 
-interface Store extends Configs {
+export interface Store extends Configs {
   connected: boolean;
   configLoading: boolean;
 }
