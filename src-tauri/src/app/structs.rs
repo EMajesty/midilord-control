@@ -67,4 +67,7 @@ impl Message {
       message_type,
     };
   }
+  pub fn get_message_action(&self) -> String {
+    return self.message_action.clone();
+  }
 }

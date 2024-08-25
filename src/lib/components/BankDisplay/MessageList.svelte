@@ -52,7 +52,6 @@
     clearDragClasses(event.currentTarget);
   }
 
-  // TODO cleanup and test this more
   function drop(event: DndDragEvent, targetIndex: number) {
     event.preventDefault();
     clearDragClasses(event.currentTarget);
@@ -61,26 +60,7 @@
     const data = JSON.parse(json);
     const messageIndex = data.messageIndex;
     if (messageIndex === targetIndex) return;
-    const newMessages = [...messages];
-    newMessages.splice(messageIndex, 1);
-    let insertToIndex = 0;
-    const insertToBefore = dragOverMiddlePoint(event);
-    if (insertToBefore) {
-      insertToIndex =
-        targetIndex === 0
-          ? 0
-          : messageIndex < targetIndex
-            ? targetIndex - 1
-            : targetIndex;
-    } else {
-      insertToIndex =
-        targetIndex === newMessages.length
-          ? newMessages.length + 1
-          : messageIndex < targetIndex
-            ? targetIndex
-            : targetIndex + 1;
-    }
-    moveMessage(messageIndex, insertToIndex);
+    moveMessage(messageIndex, targetIndex);
   }
 
   onDestroy(unsubscribe);
@@ -95,8 +75,7 @@
         on:drop={(e) => drop(e, i)}
         draggable={true}
         on:dragover={dragOver}
-        on:dragleave={dragLeave}
-      >
+        on:dragleave={dragLeave}>
         <div class="message-header">
           <h3>Msg {i + 1}</h3>
         </div>
