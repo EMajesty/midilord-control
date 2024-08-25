@@ -59,8 +59,15 @@
     if (!json || !deviceConfig || !messages) return;
     const data = JSON.parse(json);
     const messageIndex = data.messageIndex;
-    if (messageIndex === targetIndex) return;
-    moveMessage(messageIndex, targetIndex);
+    let insertToIndex = 0;
+    const insertToBefore = dragOverMiddlePoint(event);
+    if (insertToBefore) {
+      insertToIndex = targetIndex;
+    } else {
+      insertToIndex = targetIndex + 1;
+    }
+    if (messageIndex === insertToIndex) return;
+    moveMessage(messageIndex, insertToIndex);
   }
 
   onDestroy(unsubscribe);
