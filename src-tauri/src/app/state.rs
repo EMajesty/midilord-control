@@ -80,9 +80,22 @@ impl State {
     }
   }
   pub fn move_message(&mut self, message_index: u8, target_index: u8) {
+    if message_index == target_index {
+      return;
+    }
+    let t_usize: usize = target_index.into();
+    let m_usize: usize = message_index.into();
     let messages = &mut self.get_active_messages();
-    let message = messages.remove(message_index.into());
-    messages.insert(target_index.into(), message.clone());
+    let message = messages.remove(m_usize);
+    let insert_to_index: usize;
+    if t_usize == 0 {
+      insert_to_index = 0;
+    } else if t_usize >= messages.len() {
+      insert_to_index = messages.len();
+    } else {
+      insert_to_index = t_usize;
+    }
+    messages.insert(insert_to_index, message.clone());
     self.insert_messages(
       self.active_bank,
       self.active_preset,
@@ -351,10 +364,7 @@ mod tests {
       }
     }
 
-    #[test]
-    #[serial]
-    fn moves_message_to_new_index() {
-      setup();
+    fn setup_messages() {
       unsafe {
         let bank_id: u8 = 1;
         let preset_id: u8 = 1;
@@ -368,6 +378,15 @@ mod tests {
           );
         }
         STATE.insert_messages(bank_id, preset_id, messages.clone());
+      }
+    }
+
+    #[test]
+    #[serial]
+    fn moves_message_to_after() {
+      setup();
+      setup_messages();
+      unsafe {
         STATE.move_message(1, 2);
         let actions: Vec<String> = STATE.get_active_messages()
           .iter()
@@ -376,6 +395,101 @@ mod tests {
         assert_eq!(
           actions,
           ["0", "2", "1", "3", "4"],
+          "Moving message was not succesful!"
+        );
+      }
+    }
+
+    #[test]
+    #[serial]
+    fn moves_message_to_before() {
+      setup();
+      setup_messages();
+      unsafe {
+        STATE.move_message(2, 1);
+        let actions: Vec<String> = STATE.get_active_messages()
+          .iter()
+          .map(|message| message.get_message_action())
+          .collect();
+        assert_eq!(
+          actions,
+          ["0", "2", "1", "3", "4"],
+          "Moving message was not succesful!"
+        );
+      }
+    }
+
+    #[test]
+    #[serial]
+    fn moves_message_to_start() {
+      setup();
+      setup_messages();
+      unsafe {
+        STATE.move_message(2, 0);
+        let actions: Vec<String> = STATE.get_active_messages()
+          .iter()
+          .map(|message| message.get_message_action())
+          .collect();
+        assert_eq!(
+          actions,
+          ["2", "0", "1", "3", "4"],
+          "Moving message was not succesful!"
+        );
+      }
+    }
+
+    #[test]
+    #[serial]
+    fn moves_message_to_end() {
+      setup();
+      setup_messages();
+      unsafe {
+        STATE.move_message(2, 4);
+        let actions: Vec<String> = STATE.get_active_messages()
+          .iter()
+          .map(|message| message.get_message_action())
+          .collect();
+        assert_eq!(
+          actions,
+          ["0", "1", "3", "4", "2"],
+          "Moving message was not succesful!"
+        );
+      }
+    }
+
+    #[test]
+    #[serial]
+    fn swaps_first_two() {
+      setup();
+      setup_messages();
+      unsafe {
+        STATE.move_message(0, 1);
+        let actions: Vec<String> = STATE.get_active_messages()
+          .iter()
+          .map(|message| message.get_message_action())
+          .collect();
+        assert_eq!(
+          actions,
+          ["1", "0", "2", "3", "4"],
+          "Moving message was not succesful!"
+        );
+      }
+    }
+
+    #[test]
+    #[serial]
+    fn swaps_last_two() {
+      setup();
+      setup_messages();
+      unsafe {
+        STATE.move_message(3, 4);
+        let actions: Vec<String> = STATE.get_active_messages()
+          .iter()
+          .map(|message| message.get_message_action())
+          .collect();
+        assert_eq!(
+          actions,
+          ["0", "1", "2", "4", "3"],
           "Moving message was not succesful!"
         );
       }
