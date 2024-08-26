@@ -2,7 +2,6 @@
 // Contains invokable commands for Tauri
 
 use crate::app::handlers;
-
 use super::state::STATE;
 
 /// Command for connecting to the current device.
