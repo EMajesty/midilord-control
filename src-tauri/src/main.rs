@@ -7,6 +7,11 @@ use std::error::Error;
 use std::io::{ stdin, stdout, Write };
 use midir::{ Ignore, MidiInput };
 
+fn main() {
+  run().unwrap();
+  app::initialize_tauri();
+}
+
 fn parse_sysex_message(message: &[u8]) -> String {
   // We expect the message to be
   // F0 7D 6D 64 6C ... cs F7
@@ -98,13 +103,4 @@ fn run() -> Result<(), Box<dyn Error>> {
 
   println!("Closing connection");
   Ok(())
-}
-
-fn main() {
-    run().unwrap();
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![read_device_config])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
 }
