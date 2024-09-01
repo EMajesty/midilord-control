@@ -3,6 +3,7 @@
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
   import { moveMessage } from "$lib/utils/utils";
+  import { MessageType } from "$lib/utils/types";
 
   type DndDragEvent = DragEvent & {
     currentTarget: EventTarget & HTMLDivElement;
@@ -87,12 +88,20 @@
           <h3>Msg {i + 1}</h3>
         </div>
         <div class="message-column">
-          <b>Action</b>
-          <p>{message.message_action}</p>
-        </div>
-        <div class="message-column">
           <b>Type</b>
           <p>{message.message_type}</p>
+        </div>
+        <div class="message-column">
+          <b>Channel</b>
+          <p>{message.message_channel}</p>
+        </div>
+        <div class="message-column">
+          <b>Number</b>
+          <p>{message.message_number}</p>
+        </div>
+        <div class="message-column">
+          <b>Value</b>
+          <p>{message.message_value}</p>
         </div>
       </div>
     {/each}
@@ -113,7 +122,6 @@
   .message-row {
     display: flex;
     flex-direction: row;
-    gap: var(--whitespace-large);
     background-color: var(--blue-4);
     cursor: grab;
     z-index: 0;
@@ -121,10 +129,65 @@
     border: 5px outset var(--blue-4);
     position: relative;
   }
-  .message-row:global(.targeted) {
-    border-style: inset;
+  .message-row > div:nth-child(2) {
+    padding-inline: 24px;
+    flex: 1;
   }
-  .message-row:global(.targeted)::before {
+  @property --gradient-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes rotation {
+    0% {
+      --gradient-angle: 0deg;
+    }
+    100% {
+      --gradient-angle: 360deg;
+    }
+  }
+  .message-row:hover,
+  .message-row:global(.targeted) {
+    border: 0;
+    margin: 5px;
+  }
+
+  .message-row:hover::before,
+  .message-row:hover::after,
+  .message-row:global(.targeted)::before,
+  .message-row:global(.targeted)::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: inherit;
+    z-index: -1;
+    animation: rotation 10s linear infinite;
+  }
+  .message-row:hover::before,
+  .message-row:hover::after {
+    background: conic-gradient(
+      from var(--gradient-angle),
+      var(--blue-4),
+      var(--blue-5),
+      var(--blue-4)
+    );
+  }
+
+  .message-row:global(.targeted)::before,
+  .message-row:global(.targeted)::after {
+    background: conic-gradient(
+      from var(--gradient-angle),
+      #fff,
+      var(--white-blue),
+      #fff
+    );
+  }
+
+  .message-row:hover::after,
+  .message-row:global(.targeted)::after {
+    filter: blur(5px);
+  }
+  .message-row:global(.targeted) .message-header::before {
     content: "";
     width: calc(100% + 10px);
     height: 5px;
@@ -132,10 +195,10 @@
     position: absolute;
     left: -5px;
   }
-  .message-row:global(.targeted-below)::before {
+  .message-row:global(.targeted-below) .message-header::before {
     top: -12px;
   }
-  .message-row:global(.targeted-above)::before {
+  .message-row:global(.targeted-above) .message-header::before {
     bottom: -12px;
   }
   .message-header {
@@ -153,7 +216,7 @@
     pointer-events: none;
   }
   .message-column {
-    background-color: var(--background-color-regular);
+    background-color: var(--blue-4);
     font-size: 12px;
     display: flex;
     flex-direction: column;

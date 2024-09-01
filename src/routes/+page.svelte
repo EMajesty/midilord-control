@@ -21,8 +21,9 @@
     configLoading = value.configLoading;
   });
 
-  const connect = () => {
+  const connect = async () => {
     configLoading = true;
+    await new Promise((res) => setTimeout(res, 100));
     invoke("connect_device");
   };
 
@@ -52,7 +53,7 @@
 </script>
 
 <div class="app">
-  {#if !connected}
+  {#if !connected && !configLoading}
     <div class="message-container">
       <div class="message-wrapper">
         <h3>Controller not connected</h3>

@@ -32,15 +32,9 @@ fn generate_presets() -> Vec<structs::Preset> {
   );
 }
 
-fn generate_messages(
-  bank_name: String,
-  preset_name: String
-) -> Vec<structs::Message> {
-  return generate_struct_vector(constants::MESSAGE_COUNT, |index|
-    structs::Message::new(
-      format!("{}, {}, Action {}", bank_name, preset_name, index + 1),
-      format!("Type {}", index + 1)
-    )
+fn generate_messages() -> Vec<structs::Message> {
+  return generate_struct_vector(constants::MESSAGE_COUNT, |_|
+    structs::Message::new(structs::MessageType::EMPTY, 0, 0, 0)
   );
 }
 
@@ -50,18 +44,12 @@ pub fn generate() {
     let banks = generate_banks();
     for bank in banks {
       let bank_id = bank.get_id();
-      let bank_name = bank.get_name();
       STATE.insert_bank(bank);
       let presets = generate_presets();
       for preset in presets {
         let preset_id = preset.get_id();
-        let preset_name = preset.get_name();
         STATE.insert_preset(bank_id, preset);
-        STATE.insert_messages(
-          bank_id,
-          preset_id,
-          generate_messages(bank_name.clone(), preset_name)
-        );
+        STATE.insert_messages(bank_id, preset_id, generate_messages());
       }
     }
   }
