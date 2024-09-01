@@ -2,7 +2,7 @@
   import { get } from "svelte/store";
   import { store } from "../../../store";
   import { onDestroy } from "svelte";
-  import { moveMessage } from "$lib/utils/utils";
+  import { editMessage, moveMessage } from "$lib/utils/utils";
   import { MessageType } from "$lib/utils/types";
 
   type DndDragEvent = DragEvent & {
@@ -16,6 +16,10 @@
     deviceConfig = value.config;
     messages = value.messages;
   });
+
+  $: displayedMessages = messages.filter(
+    ({ message_type }) => message_type !== MessageType.EMPTY,
+  );
 
   function dragStart(event: DndDragEvent, messageIndex: number) {
     const data = { messageIndex };
@@ -71,41 +75,54 @@
     moveMessage(messageIndex, insertToIndex);
   }
 
+  function addMessage() {
+    const messageIndex = messages.findIndex(
+      ({ message_type }) => message_type === MessageType.EMPTY,
+    );
+    if (messageIndex < 0) return;
+    editMessage(messageIndex, {
+      ...messages[messageIndex],
+      message_type: MessageType.INTERNAL,
+    });
+  }
+
   onDestroy(unsubscribe);
 </script>
 
 <div class="message-list">
-  {#if messages}
-    {#each messages as message, i (message)}
-      <div
-        class={"message-row"}
-        on:dragstart={(event) => dragStart(event, i)}
-        on:drop={(e) => drop(e, i)}
-        draggable={true}
-        on:dragover={dragOver}
-        on:dragleave={dragLeave}>
-        <div class="message-header">
-          <h3>Msg {i + 1}</h3>
-        </div>
-        <div class="message-column">
-          <b>Type</b>
-          <p>{message.message_type}</p>
-        </div>
-        <div class="message-column">
-          <b>Channel</b>
-          <p>{message.message_channel}</p>
-        </div>
-        <div class="message-column">
-          <b>Number</b>
-          <p>{message.message_number}</p>
-        </div>
-        <div class="message-column">
-          <b>Value</b>
-          <p>{message.message_value}</p>
-        </div>
+  {#each displayedMessages as message, i (message)}
+    <div
+      class={"message-row"}
+      on:dragstart={(event) => dragStart(event, i)}
+      on:drop={(e) => drop(e, i)}
+      draggable={true}
+      on:dragover={dragOver}
+      on:dragleave={dragLeave}>
+      <div class="message-header">
+        <h3>Msg {i + 1}</h3>
       </div>
-    {/each}
-  {/if}
+      <div class="message-column">
+        <b>Type</b>
+        <p>{message.message_type}</p>
+      </div>
+      <div class="message-column">
+        <b>Channel</b>
+        <p>{message.message_channel}</p>
+      </div>
+      <div class="message-column">
+        <b>Number</b>
+        <p>{message.message_number}</p>
+      </div>
+      <div class="message-column">
+        <b>Value</b>
+        <p>{message.message_value}</p>
+      </div>
+    </div>
+  {/each}
+  <button
+    class="add-message-button"
+    on:click={addMessage}
+    disabled={displayedMessages.length === messages.length}>Add message</button>
 </div>
 
 <style>
@@ -221,5 +238,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--whitespace-medium);
+  }
+  .add-message-button {
+    position: fixed;
+    bottom: 10px;
+    right: 150px;
   }
 </style>

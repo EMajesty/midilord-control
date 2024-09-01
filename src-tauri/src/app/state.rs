@@ -106,6 +106,17 @@ impl State {
       messages.to_vec()
     );
   }
+  pub fn edit_message(&mut self, message_index: u8, message: structs::Message) {
+    let m_usize: usize = message_index.into();
+    let messages = &mut self.get_active_messages();
+    messages.remove(m_usize);
+    messages.insert(m_usize, message.clone());
+    self.insert_messages(
+      self.active_bank,
+      self.active_preset,
+      messages.to_vec()
+    );
+  }
 }
 
 pub static mut STATE: State = State {

@@ -23,6 +23,13 @@ export const moveMessage = (messageIndex: number, targetIndex: number) => {
   });
 }
 
+export const editMessage = (messageIndex: number, message: Message) => {
+  invoke("edit_message", {
+    messageIndex: messageIndex.toUint8(),
+    message
+  });
+}
+
 export const renameBank = (name: string) => {
   invoke("rename_bank", {
     name
@@ -36,6 +43,7 @@ export const renamePreset = (name: string) => {
 }
 
 const getUpdateStoreCallback = (staticValues?: Partial<Store>) => ({ payload }: { payload: Partial<Store> }) => {
+  console.log(payload)
   store.update((value) => ({
     ...value,
     ...payload,
@@ -85,9 +93,9 @@ export const getPresetSwitchedListener = () => {
 interface MessagePayload {
   messages: Message[];
 }
-export const getMessageMovedListener = () => {
+export const getMessagesEditedListener = () => {
   return listen<MessagePayload>(
-    "message_moved",
+    "messages_edited",
     getUpdateStoreCallback(),
   );
 }

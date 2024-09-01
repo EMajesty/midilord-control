@@ -2,7 +2,7 @@
 // Contains invokable commands for Tauri
 
 use crate::app::handlers;
-use super::state::STATE;
+use super::{ state::STATE, structs };
 
 /// Command for connecting to the current device.
 /// TODO TO BE REMOVED, SHOULD BE DONE AUTOMATICALLY
@@ -40,7 +40,20 @@ pub fn move_message(
 ) {
   unsafe {
     STATE.move_message(message_index, target_index);
-    handlers::emit_message_moved(handle)
+    handlers::emit_messages_edited(handle)
+  }
+}
+
+/// Command for editing message
+#[tauri::command]
+pub fn edit_message(
+  handle: tauri::AppHandle,
+  message_index: u8,
+  message: structs::Message
+) {
+  unsafe {
+    STATE.edit_message(message_index, message);
+    handlers::emit_messages_edited(handle)
   }
 }
 

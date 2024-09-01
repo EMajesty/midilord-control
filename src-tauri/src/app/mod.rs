@@ -19,6 +19,7 @@ pub fn initialize_tauri() {
         commands::update_selected_bank,
         commands::update_selected_preset,
         commands::move_message,
+        commands::edit_message,
         commands::rename_bank,
         commands::rename_preset
       ]
