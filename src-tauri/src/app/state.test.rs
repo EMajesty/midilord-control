@@ -411,4 +411,31 @@ mod tests {
       );
     }
   }
+
+  #[test]
+  #[serial]
+  fn edits_message_type() {
+    setup();
+    setup_messages();
+    unsafe {
+      STATE.edit_message(
+        0,
+        structs::Message::new(structs::MessageType::PROGRAM, 0, 0, 0)
+      );
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
+        .iter()
+        .map(|message| message.get_message_type())
+        .collect();
+      assert_eq!(
+        actions,
+        [
+          structs::MessageType::PROGRAM,
+          structs::MessageType::INTERNAL,
+          structs::MessageType::CONTROL,
+          structs::MessageType::PROGRAM,
+        ],
+        "Editing message was not succesful!"
+      );
+    }
+  }
 }

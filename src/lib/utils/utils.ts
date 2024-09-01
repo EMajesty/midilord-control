@@ -43,7 +43,6 @@ export const renamePreset = (name: string) => {
 }
 
 const getUpdateStoreCallback = (staticValues?: Partial<Store>) => ({ payload }: { payload: Partial<Store> }) => {
-  console.log(payload)
   store.update((value) => ({
     ...value,
     ...payload,
