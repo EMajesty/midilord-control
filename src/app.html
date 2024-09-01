@@ -1,12 +1,120 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Midilord Control</title>
-    %sveltekit.head%
-  </head>
-  <body data-sveltekit-preload-data="hover">
-    <div style="display: contents">%sveltekit.body%</div>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Midilord Control</title>
+  %sveltekit.head%
+</head>
+<script>
+  // TODO check if this can be defined elsewhere
+  class Uint8 {
+    constructor(value) {
+      if (value < 0 || value > 255) {
+        throw new Error(`Value '${value}' out of bounds, expected 0-255`);
+      }
+      const u8 = new Uint8Array(1);
+      u8[0] = value;
+      this.value = u8[0];
+    }
+    get() {
+      return this.value;
+    }
+  }
+
+  Object.defineProperty(Number.prototype, "toUint8", {
+    value: function () {
+      const u8 = new Uint8(this);
+      return u8.get();
+    },
+    writable: true,
+  });
+</script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: 'LoganDark';
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  *:hover::-webkit-scrollbar-thumb {
+    border: 2px solid var(--blue-4);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--blue-4);
+  }
+
+  p,
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+  }
+
+  input {
+    min-width: 0;
+    padding: 5px 10px;
+    background: var(--gray-4);
+    border-radius: 3px;
+    border: 1px solid var(--gray-2);
+    outline: none;
+    color: #fff;
+  }
+
+  :root {
+    --whitespace-tiny: 1px;
+    --whitespace-small: 3px;
+    --whitespace-medium: 5px;
+    --whitespace-large: 12px;
+
+    --content-min-width: 525px;
+
+    --blue-1: #121f3a;
+    --blue-2: #14255e;
+    --blue-3: #13335f;
+    --blue-4: #2B53C4;
+    --blue-5: #0729EC;
+    --blue-6: #130485;
+
+    --gray-1: #121311;
+    --gray-2: #272A23;
+    --gray-3: #373735;
+    --gray-4: #555552;
+
+    --white-blue: #BDFFFE;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  @font-face {
+    font-family: 'LoganDark';
+    src: url('/fonts/hd44780.otf');
+  }
+</style>
+
+<body data-sveltekit-preload-data="hover">
+  <div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>

@@ -1,20 +1,19 @@
 export interface Message {
-  action: string;
-  type: string;
+  message_action: string;
+  message_type: string;
 }
 
 export interface Preset {
+  id: number;
   name: string;
-  messages: Message[];
 }
 
 export interface Bank {
+  id: number;
   name: string;
-  active_preset: string;
-  presets: Preset[];
 }
 
 export interface DeviceConfig {
-  active_bank: string;
-  banks: Bank[];
+  active_bank: number;
+  active_preset: number;
 }
