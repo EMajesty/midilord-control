@@ -55,19 +55,37 @@ impl Preset {
   }
 }
 
+#[derive(Clone, serde::Serialize, Debug, PartialEq)]
+pub enum MessageType {
+  EMPTY,
+  INTERNAL,
+  CONTROL,
+  PROGRAM,
+}
+
 #[derive(Clone, serde::Serialize)]
 pub struct Message {
-  message_action: String,
-  message_type: String,
+  message_type: MessageType,
+  message_channel: u8,
+  message_number: u8,
+  message_value: u8,
 }
 impl Message {
-  pub fn new(message_action: String, message_type: String) -> Message {
+  pub fn new(
+    message_type: MessageType,
+    message_channel: u8,
+    message_number: u8,
+    message_value: u8
+  ) -> Message {
     return Message {
-      message_action,
       message_type,
+      message_channel,
+      message_number,
+      message_value,
     };
   }
-  pub fn get_message_action(&self) -> String {
-    return self.message_action.clone();
+
+  pub fn get_message_type(&self) -> MessageType {
+    self.message_type.clone()
   }
 }

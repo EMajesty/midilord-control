@@ -194,7 +194,7 @@ mod tests {
       let preset_id: u8 = 1;
       let mut messages: Vec<structs::Message> = Vec::new();
       messages.push(
-        structs::Message::new("Action".to_string(), "Type".to_string())
+        structs::Message::new(structs::MessageType::EMPTY, 0, 0, 0)
       );
       STATE.insert_messages(bank_id, preset_id, messages.clone());
       let state_messages = STATE.messages.get(&(bank_id, preset_id));
@@ -236,7 +236,7 @@ mod tests {
       STATE.active_preset = preset_id;
       let mut messages: Vec<structs::Message> = Vec::new();
       messages.push(
-        structs::Message::new("Action".to_string(), "Type".to_string())
+        structs::Message::new(structs::MessageType::EMPTY, 0, 0, 0)
       );
       STATE.insert_messages(bank_id, preset_id, messages.clone());
       let active_messages = STATE.get_active_messages();
@@ -254,12 +254,15 @@ mod tests {
       let preset_id: u8 = 1;
       STATE.active_bank = bank_id;
       STATE.active_preset = preset_id;
-      let indices = [0, 1, 2, 3, 4];
+      let types = [
+        structs::MessageType::EMPTY,
+        structs::MessageType::INTERNAL,
+        structs::MessageType::CONTROL,
+        structs::MessageType::PROGRAM,
+      ];
       let mut messages: Vec<structs::Message> = Vec::new();
-      for i in indices {
-        messages.push(
-          structs::Message::new(format!("{}", i), "Type".to_string())
-        );
+      for mtype in types {
+        messages.push(structs::Message::new(mtype, 0, 0, 0));
       }
       STATE.insert_messages(bank_id, preset_id, messages.clone());
     }
@@ -272,13 +275,18 @@ mod tests {
     setup_messages();
     unsafe {
       STATE.move_message(1, 2);
-      let actions: Vec<String> = STATE.get_active_messages()
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
         .iter()
-        .map(|message| message.get_message_action())
+        .map(|message| message.get_message_type())
         .collect();
       assert_eq!(
         actions,
-        ["0", "2", "1", "3", "4"],
+        [
+          structs::MessageType::EMPTY,
+          structs::MessageType::CONTROL,
+          structs::MessageType::INTERNAL,
+          structs::MessageType::PROGRAM,
+        ],
         "Moving message was not succesful!"
       );
     }
@@ -291,13 +299,18 @@ mod tests {
     setup_messages();
     unsafe {
       STATE.move_message(2, 1);
-      let actions: Vec<String> = STATE.get_active_messages()
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
         .iter()
-        .map(|message| message.get_message_action())
+        .map(|message| message.get_message_type())
         .collect();
       assert_eq!(
         actions,
-        ["0", "2", "1", "3", "4"],
+        [
+          structs::MessageType::EMPTY,
+          structs::MessageType::CONTROL,
+          structs::MessageType::INTERNAL,
+          structs::MessageType::PROGRAM,
+        ],
         "Moving message was not succesful!"
       );
     }
@@ -310,13 +323,18 @@ mod tests {
     setup_messages();
     unsafe {
       STATE.move_message(2, 0);
-      let actions: Vec<String> = STATE.get_active_messages()
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
         .iter()
-        .map(|message| message.get_message_action())
+        .map(|message| message.get_message_type())
         .collect();
       assert_eq!(
         actions,
-        ["2", "0", "1", "3", "4"],
+        [
+          structs::MessageType::CONTROL,
+          structs::MessageType::EMPTY,
+          structs::MessageType::INTERNAL,
+          structs::MessageType::PROGRAM,
+        ],
         "Moving message was not succesful!"
       );
     }
@@ -329,13 +347,18 @@ mod tests {
     setup_messages();
     unsafe {
       STATE.move_message(2, 4);
-      let actions: Vec<String> = STATE.get_active_messages()
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
         .iter()
-        .map(|message| message.get_message_action())
+        .map(|message| message.get_message_type())
         .collect();
       assert_eq!(
         actions,
-        ["0", "1", "3", "4", "2"],
+        [
+          structs::MessageType::EMPTY,
+          structs::MessageType::INTERNAL,
+          structs::MessageType::PROGRAM,
+          structs::MessageType::CONTROL,
+        ],
         "Moving message was not succesful!"
       );
     }
@@ -348,13 +371,18 @@ mod tests {
     setup_messages();
     unsafe {
       STATE.move_message(0, 1);
-      let actions: Vec<String> = STATE.get_active_messages()
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
         .iter()
-        .map(|message| message.get_message_action())
+        .map(|message| message.get_message_type())
         .collect();
       assert_eq!(
         actions,
-        ["1", "0", "2", "3", "4"],
+        [
+          structs::MessageType::INTERNAL,
+          structs::MessageType::EMPTY,
+          structs::MessageType::CONTROL,
+          structs::MessageType::PROGRAM,
+        ],
         "Moving message was not succesful!"
       );
     }
@@ -366,14 +394,19 @@ mod tests {
     setup();
     setup_messages();
     unsafe {
-      STATE.move_message(3, 4);
-      let actions: Vec<String> = STATE.get_active_messages()
+      STATE.move_message(2, 3);
+      let actions: Vec<structs::MessageType> = STATE.get_active_messages()
         .iter()
-        .map(|message| message.get_message_action())
+        .map(|message| message.get_message_type())
         .collect();
       assert_eq!(
         actions,
-        ["0", "1", "2", "4", "3"],
+        [
+          structs::MessageType::EMPTY,
+          structs::MessageType::INTERNAL,
+          structs::MessageType::PROGRAM,
+          structs::MessageType::CONTROL,
+        ],
         "Moving message was not succesful!"
       );
     }
