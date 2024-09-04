@@ -8,7 +8,7 @@
     getBanksUpdatedListener,
     getBankSwitchedListener,
     getConnectionListener,
-    getMessageMovedListener,
+    getMessagesEditedListener,
     getPresetsUpdatedListener,
     getPresetSwitchedListener,
   } from "$lib/utils/utils";
@@ -36,7 +36,7 @@
     const connectionListener = getConnectionListener();
     const bankSwitchedListener = getBankSwitchedListener();
     const presetSwitchedListener = getPresetSwitchedListener();
-    const messageMovedListener = getMessageMovedListener();
+    const messageMovedListener = getMessagesEditedListener();
     const banksUpdatedListener = getBanksUpdatedListener();
     const presetsUpdatedListener = getPresetsUpdatedListener();
     return () => {

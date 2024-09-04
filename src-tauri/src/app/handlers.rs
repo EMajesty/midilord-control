@@ -71,10 +71,10 @@ struct MessagePayload {
   messages: Vec<structs::Message>,
 }
 /// Sends selected preset details to the UI.
-pub fn emit_message_moved(handle: tauri::AppHandle) {
+pub fn emit_messages_edited(handle: tauri::AppHandle) {
   unsafe {
     handle
-      .emit_all("message_moved", MessagePayload {
+      .emit_all("messages_edited", MessagePayload {
         messages: STATE.get_active_messages(),
       })
       .unwrap();

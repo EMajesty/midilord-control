@@ -1,8 +1,8 @@
 export enum MessageType {
-  EMPTY,
-  INTERNAL,
-  CONTROL,
-  PROGRAM,
+  EMPTY = "EMPTY",
+  INTERNAL = "INTERNAL",
+  CONTROL = "CONTROL",
+  PROGRAM = "PROGRAM",
 }
 
 type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] extends N

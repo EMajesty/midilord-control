@@ -55,7 +55,7 @@ impl Preset {
   }
 }
 
-#[derive(Clone, serde::Serialize, Debug, PartialEq)]
+#[derive(Clone, serde::Serialize, serde::Deserialize, Debug, PartialEq)]
 pub enum MessageType {
   EMPTY,
   INTERNAL,
@@ -63,7 +63,7 @@ pub enum MessageType {
   PROGRAM,
 }
 
-#[derive(Clone, serde::Serialize)]
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct Message {
   message_type: MessageType,
   message_channel: u8,
